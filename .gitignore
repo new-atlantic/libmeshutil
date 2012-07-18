@@ -1,5 +1,9 @@
 CMakeCache.txt
 CMakeFiles
+Testing/
+CTestTestfile.cmake
 Makefile
 cmake_install.cmake
 install_manifest.txt
+
+*.so
