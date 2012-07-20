@@ -1,15 +1,12 @@
 #ifdef __linux
 
 #include <stdlib.h>
+#include <sys/utsname.h>
 
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 
 #define UNIMPLMENTED "Test not implemented"
-
-void check_kernel_module_available (void) {
-  CU_FAIL (UNIMPLMENTED);
-}
 
 int main (void)
 {
@@ -22,14 +19,6 @@ int main (void)
 	pSuite = CU_add_suite ("meshutil batman_adv suite", NULL, NULL);
 
 	if (!pSuite) {
-		CU_cleanup_registry();
-		return CU_get_error();
-	}
-
-	if (!CU_add_test (pSuite,
-	                  "Test whether checking for the availability of mod"
-                          " batman_adv works",
-	                  check_kernel_module_available)) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}

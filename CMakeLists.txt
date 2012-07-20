@@ -22,13 +22,18 @@ install(DIRECTORY src/ DESTINATION include/meshutil
 enable_testing ()
 find_library (CUNIT_LIBRARY cunit)
 
-set (test_BIN_DIR "tests/bin/")
-#add_executable (${test_BIN_DIR}cunit_meshutil tests/cunit/meshutil_tests.c)
-#target_link_libraries (${test_BIN_DIR}cunit_meshutil ${CUNIT_LIBRARY} meshutil)
-#add_test (cunit_meshutil_test ${test_BIN_DIR}cunit_meshutil)
+set (BASH_TEST_DIR "tests/bash/")
+set (CUNIT_TEST_DIR "tests/cunit/")
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	add_executable (${test_BIN_DIR}cunit_batman_adv tests/cunit/batman_adv_tests.c)
-	target_link_libraries (${test_BIN_DIR}cunit_batman_adv ${CUNIT_LIBRARY})
-	add_test (cunit_batman_adv_test ${test_BIN_DIR}cunit_batman_adv)
+	add_executable (${BASH_TEST_DIR}bin/kmod_available
+                        ${BASH_TEST_DIR}src/kmod_available.c)
+        target_link_libraries (${BASH_TEST_DIR}bin/kmod_available meshutil)
+	add_test (bash_batman_adv_test ${BASH_TEST_DIR}runners/batman_adv.sh)
+
+	add_executable (${CUNIT_TEST_DIR}bin/cunit_batman_adv
+                        ${CUNIT_TEST_DIR}src/batman_adv_tests.c)
+	target_link_libraries (${CUNIT_TEST_DIR}bin/cunit_batman_adv 
+                               ${CUNIT_LIBRARY} meshutil)
+	add_test (cunit_batman_adv_test ${CUNIT_TEST_DIR}bin/cunit_meshutil)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
