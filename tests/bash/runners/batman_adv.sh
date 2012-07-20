@@ -2,26 +2,31 @@
 
 FAILURES=0
 
-#$1 Test name.
 #$2 Test binary name.
 #$3 Expected value.
 #$4 Tabs
 test_case () {
+    local TEST_NAME="$1"
+    local TEST_BINARY="$2"
+    local EXPECTED_RESULT="$3"
+    local PRECEDING_TABS="$4"
+
     local PASS="$(echo -n '['; tput setaf 2; echo -n 'pass'; tput sgr0; echo -n ']')"
     local FAIL="$(echo -n '['; tput setaf 1; echo -n 'fail'; tput sgr0; echo -n ']')"
+
     local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-    echo -n "$1: "
+    echo -n "$TEST_NAME: "
 
-    local VALUE=$("$DIR/../bin/$2")
-    if [ "$3" == "$VALUE" ]; then
-        local RESULT=$PASS
+    local ACTUAL_RESULT=$("$DIR/../bin/$TEST_BINARY")
+    if [ "$EXPECTED_RESULT" == "$ACTUAL_RESULT" ]; then
+        local TEST_RESULT=$PASS
     else
-        local RESULT=$FAIL
+        local TEST_RESULT=$FAIL
         ((FAILURES++))
     fi
 
-    echo -e "$4\t$RESULT\t\t$3\t\t\t$VALUE"
+    echo -e "$PRECEDING_TABS\t$TEST_RESULT\t\t$EXPECTED_RESULT\t\t\t$ACTUAL_RESULT"
 }
 
 echo -e "\t\t\t\t\t\t BATMAN Advanced test cases"
