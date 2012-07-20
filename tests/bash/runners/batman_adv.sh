@@ -1,5 +1,6 @@
 #!/bin/bash
 
+PASSES=0
 FAILURES=0
 
 #$2 Test binary name.
@@ -21,6 +22,7 @@ test_case () {
     local ACTUAL_RESULT=$("$DIR/../bin/$TEST_BINARY")
     if [ "$EXPECTED_RESULT" == "$ACTUAL_RESULT" ]; then
         local TEST_RESULT=$PASS
+        ((PASSES++))
     else
         local TEST_RESULT=$FAIL
         ((FAILURES++))
@@ -72,5 +74,14 @@ else
 fi;
 
 ########
+
+echo ""
+echo -e "Test cases run:\t\t$((PASSES + FAILURES))"
+if [ $PASSES -gt 0 ]; then
+    echo -en "Tests passed:\t\t"; tput setaf 2; echo -n "$PASSES"; tput sgr0; echo "";
+fi;
+if [ $FAILURES -gt 0 ]; then
+    echo -en "Tests failed:\t\t"; tput setaf 1; echo -n "$FAILURES"; tput sgr0; echo "";
+fi;
 
 exit $FAILURES
