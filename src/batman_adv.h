@@ -19,5 +19,16 @@
  **/
 bool mu_batman_adv_kmod_available(int *error);
 
+/**
+ * @brief Test whether the batman_adv kernel module is loaded.
+ *
+ * @param  *error See documetation for *error.
+ *
+ * @retval  true  The module is loaded.
+ * @retval  false The module is not loaded. Also returned if an error
+ *                occurred.
+ **/
+bool mu_batman_adv_kmod_loaded(int *error);
+
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */

@@ -29,11 +29,14 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	add_executable (${BASH_TEST_DIR}bin/kmod_available
                         ${BASH_TEST_DIR}src/kmod_available.c)
         target_link_libraries (${BASH_TEST_DIR}bin/kmod_available meshutil)
+	add_executable (${BASH_TEST_DIR}bin/kmod_loaded
+                        ${BASH_TEST_DIR}src/kmod_loaded.c)
+        target_link_libraries (${BASH_TEST_DIR}bin/kmod_loaded meshutil)
 	add_test (bash_batman_adv_test ${BASH_TEST_DIR}runners/batman_adv.sh)
 
 	add_executable (${CUNIT_TEST_DIR}bin/cunit_batman_adv
                         ${CUNIT_TEST_DIR}src/batman_adv_tests.c)
-	target_link_libraries (${CUNIT_TEST_DIR}bin/cunit_batman_adv 
+	target_link_libraries (${CUNIT_TEST_DIR}bin/cunit_batman_adv
                                ${CUNIT_LIBRARY} meshutil)
 	add_test (cunit_batman_adv_test ${CUNIT_TEST_DIR}bin/cunit_meshutil)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")

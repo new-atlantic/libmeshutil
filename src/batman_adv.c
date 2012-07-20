@@ -58,4 +58,21 @@ bool mu_batman_adv_kmod_available(int *error)
     }
 }
 
+bool mu_batman_adv_kmod_loaded(int *error)
+{
+    {
+        // FIXME: Checking the sys filesystem should work since 2010.0.0, not before.
+        if (!access("/sys/module/batman_adv/version", F_OK)) {
+            return true;
+        } else {
+            if (errno == ENOENT)
+                return false;
+            else {
+                MU_SET_ERROR(error, errno);
+                return false;
+            }
+        }
+    }
+}
+
 #endif                          /* __linux */
