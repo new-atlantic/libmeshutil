@@ -38,5 +38,5 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
                         ${CUNIT_TEST_DIR}src/batman_adv_tests.c)
 	target_link_libraries (${CUNIT_TEST_DIR}bin/cunit_batman_adv
                                ${CUNIT_LIBRARY} meshutil)
-	add_test (cunit_batman_adv_test ${CUNIT_TEST_DIR}bin/cunit_meshutil)
+	add_test (cunit_batman_adv_test ${CUNIT_TEST_DIR}bin/cunit_batman_adv)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
