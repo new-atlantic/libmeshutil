@@ -30,5 +30,16 @@ bool mu_batman_adv_kmod_available(int *error);
  **/
 bool mu_batman_adv_kmod_loaded(int *error);
 
+
+/**
+ * @brief Get the kernel module version.
+ *
+ * @param  *error See documetation for *error.
+ *
+ * @return Pointer to kernel module version string.
+ * @return Returns NULL on failure.
+ */
+char *mu_batman_adv_kmod_version(int *error);
+
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */

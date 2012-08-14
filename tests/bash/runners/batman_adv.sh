@@ -3,14 +3,12 @@
 PASSES=0
 FAILURES=0
 
-#$2 Test binary name.
-#$3 Expected value.
-#$4 Tabs
 test_case () {
     local TEST_NAME="$1"
     local TEST_BINARY="$2"
     local EXPECTED_RESULT="$3"
     local PRECEDING_TABS="$4"
+    local MIDDLE_TABS="$5"
 
     local PASS="$(echo -n '['; tput setaf 2; echo -n 'pass'; tput sgr0; echo -n ']')"
     local FAIL="$(echo -n '['; tput setaf 1; echo -n 'fail'; tput sgr0; echo -n ']')"
@@ -28,7 +26,7 @@ test_case () {
         ((FAILURES++))
     fi
 
-    echo -e "$PRECEDING_TABS\t$TEST_RESULT\t\t$EXPECTED_RESULT\t\t\t$ACTUAL_RESULT"
+    echo -e "$PRECEDING_TABS\t$TEST_RESULT\t\t$EXPECTED_RESULT$MIDDLE_TABS\t$ACTUAL_RESULT"
 }
 
 echo -e "\t\t\t\t\t\t BATMAN Advanced test cases"
@@ -44,7 +42,7 @@ else
     EXPECTED="FALSE"
 fi;
 
-test_case "Kernel Module Available" "kmod_available" "$EXPECTED" "\t"
+test_case "Kernel Module Available" "kmod_available" "$EXPECTED" "\t" "\t\t"
 
 if [ "$EXPECTED" == "FALSE" ]; then
     echo "batman_adv kernel module not available. Aborting..."
@@ -59,7 +57,7 @@ if [ "$(grep -o "^batman_adv" /proc/modules)" == "batman_adv" ]; then
     echo "Removing batman_adv failed. Aborting..."
     exit 1
 else
-    test_case "Kernel Module Loaded" "kmod_loaded" "FALSE" "\t\t"
+    test_case "Kernel Module Loaded" "kmod_loaded" "FALSE" "\t\t" "\t\t"
 fi;
 
 ####
@@ -70,8 +68,12 @@ if [ -z $(grep -o "^batman_adv" /proc/modules) ]; then
     echo "Inserting kernel module failed. Aborting..."
     exit 1
 else
-    test_case "Kernel Module Loaded" "kmod_loaded" "TRUE" "\t\t"
+    test_case "Kernel Module Loaded" "kmod_loaded" "TRUE" "\t\t" "\t\t"
 fi;
+
+########
+
+test_case "Kernel Module Version" "kmod_version" "$(cat /sys/module/batman_adv/version)" "\t\t" "\t"
 
 ########
 
