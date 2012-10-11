@@ -1,6 +1,6 @@
 #ifdef __linux
 
-#define _X_OPEN_SOURCE 700
+#define _XOPEN_SOURCE 700
 
 #include <errno.h>
 #include <stdio.h>
