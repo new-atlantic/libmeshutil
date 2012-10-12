@@ -5,6 +5,52 @@ FAILURES=0
 
 NETWORK_INTERFACE=$(ifconfig -s -a | head -n 2 | tail -n 1 | awk '{ print $1 }')
 
+remove_kmod() {
+    modprobe -r batman_adv
+
+    if [ "$(grep -o "^batman_adv" /proc/modules)" == "batman_adv" ]; then
+        echo "Removing batman_adv failed. Aborting..."
+        exit 1
+    fi
+}
+
+insert_kmod() {
+    modprobe batman_adv
+
+    if [ -z $(grep -o "^batman_adv" /proc/modules) ]; then
+        echo "Inserting kernel module failed. Aborting..."
+        exit 1
+    fi
+}
+
+add_bat_if() {
+  local INTERFACE_NAME="$1"
+
+  if [ -z "$INTERFACE_NAME" ]; then
+    batctl if add $NETWORK_INTERFACE
+    if [ -z "$(batctl if | grep $NETWORK_INTERFACE)" ]; then
+      echo "Enabling bat interface failed. Aborting..."
+      exit 1
+    fi
+  else
+    batctl -m "$INTERFACE_NAME" if add $NETWORK_INTERFACE
+    if [ -z "$(batctl -m $INTERFACE_NAME if | grep $NETWORK_INTERFACE)" ]; then
+      echo "Enabling bat interface failed. Aborting..."
+      exit 1
+    fi
+  fi
+}
+
+del_bat_if() {
+  local INTERFACE_NAME="$1"
+
+  if [ -z "$INTERFACE_NAME" ]; then
+    batctl if del $NETWORK_INTERFACE
+  else
+    batctl -m "$INTERFACE_NAME" if del $NETWORK_INTERFACE
+  fi
+}
+
 test_case () {
     local TEST_NAME="$1"
     local TEST_BINARY="$2"
@@ -53,25 +99,13 @@ fi
 
 ########
 
-modprobe -r batman_adv
-
-if [ "$(grep -o "^batman_adv" /proc/modules)" == "batman_adv" ]; then
-    echo "Removing batman_adv failed. Aborting..."
-    exit 1
-else
-    test_case "Kernel Module Loaded" "kmod_loaded" "FALSE" "\t\t" "\t\t"
-fi;
+remove_kmod
+test_case "Kernel Module Loaded" "kmod_loaded" "FALSE" "\t\t" "\t\t"
 
 ####
 
-modprobe batman_adv
-
-if [ -z $(grep -o "^batman_adv" /proc/modules) ]; then
-    echo "Inserting kernel module failed. Aborting..."
-    exit 1
-else
-    test_case "Kernel Module Loaded" "kmod_loaded" "TRUE" "\t\t" "\t\t"
-fi;
+insert_kmod
+test_case "Kernel Module Loaded" "kmod_loaded" "TRUE" "\t\t" "\t\t"
 
 ########
 
@@ -79,61 +113,31 @@ test_case "Kernel Module Version" "kmod_version" "$(cat /sys/module/batman_adv/v
 
 ########
 
-modprobe -r batman_adv
-
-if [ "$(grep -o "^batman_adv" /proc/modules)" == "batman_adv" ]; then
-    echo "Removing batman_adv failed. Aborting..."
-    exit 1
-else
-    test_case "Default bat interface available" "if_available_default" "FALSE" "" "\t\t"
-fi;
+remove_kmod
+test_case "Default bat interface available" "if_available_default" "FALSE" "" "\t\t"
 
 ####
 
-modprobe batman_adv
-if [ -z $(grep -o "^batman_adv" /proc/modules) ]; then
-    echo "Inserting kernel module failed. Aborting..."
-    exit 1
-else
-    batctl if add $NETWORK_INTERFACE
-    if [ -z "$(batctl if | grep $NETWORK_INTERFACE)" ]; then
-      echo "Enabling bat interface failed. Aborting..."
-      exit 1
-    else
-      test_case "Default bat interface available" "if_available_default" "TRUE" "" "\t\t"
-      batctl if del $NETWORK_INTERFACE
-    fi;
-fi;
+insert_kmod
+add_bat_if
+test_case "Default bat interface available" "if_available_default" "TRUE" "" "\t\t"
+del_bat_if
 
 ########
 
-modprobe -r batman_adv
-
-if [ "$(grep -o "^batman_adv" /proc/modules)" == "batman_adv" ]; then
-    echo "Removing batman_adv failed. Aborting..."
-    exit 1
-else
-    test_case "Named bat interface available" "if_available_named" "FALSE" "\t" "\t\t"
-fi;
+remove_kmod
+test_case "Named bat interface available" "if_available_named" "FALSE" "\t" "\t\t"
 
 ####
 
-modprobe batman_adv
-if [ -z $(grep -o "^batman_adv" /proc/modules) ]; then
-    echo "Inserting kernel module failed. Aborting..."
-    exit 1
-else
-    batctl -m "not_default" if add $NETWORK_INTERFACE
-    if [ -z "$(batctl -m 'not_default' if | grep $NETWORK_INTERFACE)" ]; then
-      echo "Enabling bat interface failed. Aborting..."
-      exit 1
-    else
-      test_case "Named bat interface available" "if_available_named" "TRUE" "\t" "\t\t"
-      batctl -m "not_default" if del $NETWORK_INTERFACE
-    fi;
-fi;
+insert_kmod
+add_bat_if "not_default"
+test_case "Named bat interface available" "if_available_named" "TRUE" "\t" "\t\t"
+del_bat_if "not_default"
 
 ########
+
+remove_kmod
 
 echo ""
 echo -e "Test cases run:\t\t$((PASSES + FAILURES))"
