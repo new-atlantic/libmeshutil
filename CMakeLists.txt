@@ -9,7 +9,9 @@ add_definitions ('-Dmeshutil_VERSION="${meshutil_VERSION}"')
 
 add_library (meshutil SHARED src/batman_adv.c)
 
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wall -Wextra -fpic")
+set (HARDENING_FLAGS "-Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -fstack-protector --param ssp-buffer-size=4 -Wl,-z,now -Wl,-z,relro")
+
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wall -Wextra -fpic ${HARDENING_FLAGS}")
 if (CMAKE_COMPILER_IS_GNUCC)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif (CMAKE_COMPILER_IS_GNUCC)
