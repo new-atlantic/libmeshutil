@@ -30,7 +30,6 @@ bool mu_batman_adv_kmod_available(int *error);
  **/
 bool mu_batman_adv_kmod_loaded(int *error);
 
-
 /**
  * @brief Get the kernel module version.
  *
@@ -40,6 +39,19 @@ bool mu_batman_adv_kmod_loaded(int *error);
  * @return Returns NULL on failure.
  */
 char *mu_batman_adv_kmod_version(int *error);
+
+/**
+ * @brief Check whether a bat interface is available.
+ *
+ * @param *error See documetation for *error.
+ * @param *interface_name Name of the interface to be looked for. If NULL is
+ *                        passed looks for "bat0", the default interface.
+ *
+ * @retval true  The interface is available.
+ * @retval false The interface is not available. Also returned if an error
+ *               ocurred.
+ */
+bool mu_batman_adv_if_available(char *interface_name, int *error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
