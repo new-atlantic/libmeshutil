@@ -28,6 +28,12 @@ At the moment *libmeshutil* only supports *B.A.T.M.A.N. advanced*, which
 requires the Linux kernel. Support for other protocols such as *BABEL* and
 *olsr* is planned.
 
+Testing
+-------
+
+The shell based batman_adv tests require root privileges to run and will fail
+if run without.
+
 License
 -------
 
