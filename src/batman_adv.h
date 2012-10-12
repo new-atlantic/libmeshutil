@@ -3,6 +3,7 @@
 /* Abbreviations used:
  *
  *     batman_adv:  B.A.T.M.A.N. advanced
+ *     hwaddr:      MAC address of network interface
  *     if:          network interface
  *     kmod:        kernel module
  *     mu:          meshutil
@@ -60,6 +61,32 @@ char *mu_batman_adv_kmod_version(int *error);
  *               ocurred.
  */
 bool mu_batman_adv_if_available(char *interface_name, int *error);
+
+/**
+ * @brief Check whether a bat interface is up.
+ *
+ * @param *error See documetation for *error.
+ * @param *interface_name Name of the interface to be looked for. If NULL is
+ *                        passed looks for "bat0", the default interface.
+ *
+ * @retval true  The interface is up.
+ * @retval false The interface is not up. Also returned if an error
+ *               ocurred.
+
+ */
+bool mu_batman_adv_if_up(char *interface_name, int *error);
+
+/**
+ * @brief Get the MAC address of the bat interface.
+ *
+ * @param *error See documetation for *error.
+ * @param *interface_name Name of the interface to be looked for. If NULL is
+ *                        passed looks for "bat0", the default interface.
+ *
+ * @return Pointer to interface MAC address string.
+ * @return Returns NULL on failure.
+ */
+char * mu_batman_adv_if_hwaddr(char *interface_name, int *error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
