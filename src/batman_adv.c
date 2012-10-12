@@ -97,4 +97,35 @@ char *mu_batman_adv_kmod_version(int *error)
      }
 }
 
+bool mu_batman_adv_if_available(char *interface_name, int *error)
+{
+     char *bat_interface_path_root = "/sys/devices/virtual/net/";
+     char *bat_interface_path;
+
+     if (!interface_name) {
+          bat_interface_path = calloc(strlen(bat_interface_path_root)
+                                      + strlen("bat0") + 1, sizeof(char));
+          strcat(bat_interface_path, bat_interface_path_root);
+          strcat(bat_interface_path, "bat0");
+
+     } else {
+          bat_interface_path = calloc(strlen(bat_interface_path_root)
+                                      + strlen(interface_name) + 1,
+                                      sizeof(char));
+          strcat(bat_interface_path, bat_interface_path_root);
+          strcat(bat_interface_path, interface_name);
+     }
+
+	   // Checking the sys filesystem should work since 2010.0.0, not before.
+	   if (!access (bat_interface_path, F_OK)) {
+		 return true;
+	   } else {
+		      if (errno == ENOENT)
+			    return false;
+		 else
+			    MU_SET_ERROR(error, errno);
+			    return false;
+		 }
+}
+
 #endif                          /* __linux */
