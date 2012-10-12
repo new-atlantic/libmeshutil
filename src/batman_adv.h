@@ -44,7 +44,8 @@ bool mu_batman_adv_kmod_loaded(int *error);
  *
  * @param  *error See documetation for *error.
  *
- * @return Pointer to kernel module version string.
+ * @return Pointer to kernel module version string. The pointer has to be
+ * free()'d by the caller.
  * @return Returns NULL on failure.
  */
 char *mu_batman_adv_kmod_version(int *error);
@@ -83,7 +84,8 @@ bool mu_batman_adv_if_up(char *interface_name, int *error);
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  *
- * @return Pointer to interface MAC address string.
+ * @return Pointer to interface MAC address string. The pointer has to be
+ * free()'d by the caller.
  * @return Returns NULL on failure.
  */
 char * mu_batman_adv_if_hwaddr(char *interface_name, int *error);
