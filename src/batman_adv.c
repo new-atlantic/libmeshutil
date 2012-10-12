@@ -105,6 +105,7 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
      if (!interface_name) {
           bat_interface_path = calloc(strlen(bat_interface_path_root)
                                       + strlen("bat0") + 1, sizeof(char));
+          //FIXME: Check if calloc succeeded.
           strcat(bat_interface_path, bat_interface_path_root);
           strcat(bat_interface_path, "bat0");
 
@@ -112,6 +113,7 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
           bat_interface_path = calloc(strlen(bat_interface_path_root)
                                       + strlen(interface_name) + 1,
                                       sizeof(char));
+          //FIXME: Check if calloc succeeded.
           strcat(bat_interface_path, bat_interface_path_root);
           strcat(bat_interface_path, interface_name);
      }
@@ -120,11 +122,14 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
 	   if (!access (bat_interface_path, F_OK)) {
 		 return true;
 	   } else {
-		      if (errno == ENOENT)
-			    return false;
-		 else
-			    MU_SET_ERROR(error, errno);
-			    return false;
+		      if (errno == ENOENT) {
+		           free(bat_interface_path);
+			         return false;
+		      } else {
+    			     MU_SET_ERROR(error, errno);
+		           free(bat_interface_path);
+			         return false;
+			    }
 		 }
 }
 
