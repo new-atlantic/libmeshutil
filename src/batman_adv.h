@@ -1,5 +1,13 @@
 /// @file batman_adv.h
 
+/* Abbreviations used:
+ *
+ *     batman_adv:  B.A.T.M.A.N. advanced
+ *     if:          network interface
+ *     kmod:        kernel module
+ *     mu:          meshutil
+ */
+
 #ifndef MESHUTIL_BATMAN_ADV_H
 #define MESHUTIL_BATMAN_ADV_H 1
 
