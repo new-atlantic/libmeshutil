@@ -28,6 +28,15 @@ At the moment *libmeshutil* only supports *B.A.T.M.A.N. advanced*, which
 requires the Linux kernel. Support for other protocols such as *BABEL* and
 *olsr* is planned.
 
+B.A.T.M.A.N. advanced
+*********************
+
+At the moment all the functions for *B.A.T.M.A.N. advanced* have only been
+tested with version 2011.4.0 and compatiblity with other versions is not
+guaranteed. Specifically versions preceding 2010.0.0 should not work.
+Compatibility and testing with multiple versions is the aim, but there is
+no intention to support versions older thatn 2010.0.0.
+
 Testing
 -------
 
