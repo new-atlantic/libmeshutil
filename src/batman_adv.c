@@ -91,6 +91,7 @@ char *mu_batman_adv_kmod_version(int *error)
 
      if ((read = getline(&line, &len, fp)) != -1) {
           fclose(fp);
+          line[strlen(line)-1] = '\0';
           return line;
      } else {
           MU_SET_ERROR(error, errno);
