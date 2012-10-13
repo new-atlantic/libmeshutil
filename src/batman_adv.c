@@ -245,4 +245,57 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
      }
 }
 
+char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
+{
+     char *bat_interface_path_root = "/sys/devices/virtual/net/";
+     char *bat_interface_address;
+
+     if (!interface_name) {
+          bat_interface_address = calloc(strlen(bat_interface_path_root)
+                                      + strlen("bat0/address") + 1,
+                                      sizeof(char));
+          //FIXME: Check if calloc succeeded.
+          strcat(bat_interface_address, bat_interface_path_root);
+          strcat(bat_interface_address, "bat0/address");
+
+     } else {
+          bat_interface_address = calloc(strlen(bat_interface_path_root)
+                                      + strlen(interface_name)
+                                      + strlen("/address")
+                                      + 1,
+                                      sizeof(char));
+          //FIXME: Check if calloc succeeded.
+          strcat(bat_interface_address, bat_interface_path_root);
+          strcat(bat_interface_address, interface_name);
+          strcat(bat_interface_address, "/address");
+     }
+
+     FILE *fp;
+     char *line = NULL;
+     size_t len = 0;
+     ssize_t read;
+
+     fp = fopen (bat_interface_address, "r");
+
+     if (!fp) {
+          MU_SET_ERROR(error, errno);
+          free(bat_interface_address);
+          return NULL;
+     }
+
+     free(bat_interface_address);
+
+     if ((read = getline(&line, &len, fp)) != -1) {
+          fclose(fp);
+          line[strlen(line)-1] = '\0';
+          return line;
+     } else {
+          MU_SET_ERROR(error, errno);
+          fclose(fp);
+          return NULL;
+     }
+
+
+}
+
 #endif                          /* __linux */

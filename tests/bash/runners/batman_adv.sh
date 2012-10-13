@@ -63,6 +63,16 @@ enable_bat_if() {
   fi
 }
 
+bat_if_address() {
+  local INTERFACE_NAME="$1"
+
+  if [ -z "$INTERFACE_NAME" ]; then
+    ifconfig bat0 | grep HWaddr | egrep -o "([[:alnum:]][[:alnum:]][:]){5}[[:alnum:]][[:alnum:]]"
+  else
+    ifconfig $INTERFACE_NAME | grep HWaddr | egrep -o "([[:alnum:]][[:alnum:]][:]){5}[[:alnum:]][[:alnum:]]"
+  fi
+}
+
 test_case () {
     local TEST_NAME="$1"
     local TEST_BINARY="$2"
@@ -175,6 +185,31 @@ del_bat_if "not_default"
 
 ########
 
+remove_kmod
+test_case "Default bat interface MAC address" "if_hwaddr_default" "ERROR" "" "\t\t"
+
+####
+
+insert_kmod
+add_bat_if
+BAT_IF_ADDR=$(bat_if_address)
+test_case "Default bat interface MAC address" "if_hwaddr_default" "$BAT_IF_ADDR" "" ""
+del_bat_if
+
+####
+
+remove_kmod
+test_case "Named bat interface MAC address" "if_hwaddr_named" "ERROR" "" "\t\t"
+
+####
+
+insert_kmod
+add_bat_if "not_default"
+BAT_IF_ADDR=$(bat_if_address "not_default")
+test_case "Named bat interface MAC address" "if_hwaddr_named" "$BAT_IF_ADDR" "" ""
+del_bat_if "not_default"
+
+########
 remove_kmod
 
 echo ""

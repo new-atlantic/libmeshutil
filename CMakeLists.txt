@@ -54,6 +54,14 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
                         ${BASH_TEST_DIR}src/if_up_named.c)
         target_link_libraries (${BASH_TEST_DIR}bin/if_up_named meshutil)
 
+	add_executable (${BASH_TEST_DIR}bin/if_hwaddr_default
+                        ${BASH_TEST_DIR}src/if_hwaddr_default.c)
+        target_link_libraries (${BASH_TEST_DIR}bin/if_hwaddr_default meshutil)
+
+	add_executable (${BASH_TEST_DIR}bin/if_hwaddr_named
+                        ${BASH_TEST_DIR}src/if_hwaddr_named.c)
+        target_link_libraries (${BASH_TEST_DIR}bin/if_hwaddr_named meshutil)
+
 	add_test (bash_batman_adv_test ${BASH_TEST_DIR}runners/batman_adv.sh)
 
 	add_executable (${CUNIT_TEST_DIR}bin/cunit_batman_adv
