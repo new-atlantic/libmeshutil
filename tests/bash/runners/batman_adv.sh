@@ -51,6 +51,18 @@ del_bat_if() {
   fi
 }
 
+enable_bat_if() {
+  local INTERFACE_NAME="$1"
+
+  ifconfig "$NETWORK_INTERFACE" up
+
+  if [ -z "$INTERFACE_NAME" ]; then
+    ifconfig "bat0" up
+  else
+    ifconfig "$INTERFACE_NAME" up
+  fi
+}
+
 test_case () {
     local TEST_NAME="$1"
     local TEST_BINARY="$2"
@@ -123,7 +135,7 @@ add_bat_if
 test_case "Default bat interface available" "if_available_default" "TRUE" "" "\t\t"
 del_bat_if
 
-########
+####
 
 remove_kmod
 test_case "Named bat interface available" "if_available_named" "FALSE" "\t" "\t\t"
@@ -133,6 +145,32 @@ test_case "Named bat interface available" "if_available_named" "FALSE" "\t" "\t\
 insert_kmod
 add_bat_if "not_default"
 test_case "Named bat interface available" "if_available_named" "TRUE" "\t" "\t\t"
+del_bat_if "not_default"
+
+########
+
+remove_kmod
+test_case "Default bat interface up" "if_up_default" "FALSE" "\t" "\t\t"
+
+####
+
+insert_kmod
+add_bat_if
+enable_bat_if
+test_case "Default bat interface up" "if_up_default" "TRUE" "\t" "\t\t"
+del_bat_if
+
+####
+
+remove_kmod
+test_case "Named bat interface up" "if_up_named" "FALSE" "\t" "\t\t"
+
+####
+
+insert_kmod
+add_bat_if "not_default"
+enable_bat_if "not_default"
+test_case "Named bat interface up" "if_up_named" "TRUE" "\t" "\t\t"
 del_bat_if "not_default"
 
 ########

@@ -135,4 +135,113 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
 		 }
 }
 
+bool mu_batman_adv_if_up(char *interface_name, int *error)
+{
+     char *bat_interface_path_root = "/sys/devices/virtual/net/";
+     char *bat_interface_operstate_file;
+     char *bat_interface_carrier_file;
+
+     if (!interface_name) {
+          bat_interface_operstate_file = calloc(strlen(bat_interface_path_root)
+                                         + strlen("bat0") + strlen("/operstate")
+                                         + 1, sizeof(char));
+          //FIXME: Check if calloc succeeded.
+          bat_interface_carrier_file = calloc(strlen(bat_interface_path_root)
+                                       + strlen("bat0") + strlen("/carrier")
+                                       + 1, sizeof(char));
+          //FIXME: Check if calloc succeeded.
+          strcat(bat_interface_operstate_file, bat_interface_path_root);
+          strcat(bat_interface_operstate_file, "bat0/operstate");
+          strcat(bat_interface_carrier_file, bat_interface_path_root);
+          strcat(bat_interface_carrier_file, "bat0/carrier");
+
+     } else {
+          bat_interface_operstate_file = calloc(strlen(bat_interface_path_root)
+                                         + strlen(interface_name)
+                                         + strlen("/operstate")
+                                         + 1,
+                                         sizeof(char));
+          //FIXME: Check if calloc succeeded.
+          bat_interface_carrier_file = calloc(strlen(bat_interface_path_root)
+                                         + strlen(interface_name)
+                                         + strlen("/carrier")
+                                         + 1,
+                                         sizeof(char));
+          //FIXME: Check if calloc succeeded.
+          strcat(bat_interface_operstate_file, bat_interface_path_root);
+          strcat(bat_interface_operstate_file, interface_name);
+          strcat(bat_interface_operstate_file, "/operstate");
+          strcat(bat_interface_carrier_file, bat_interface_path_root);
+          strcat(bat_interface_carrier_file, interface_name);
+          strcat(bat_interface_carrier_file, "/carrier");
+
+     }
+
+     FILE *fp;
+     char *line = NULL;
+     size_t len = 0;
+     ssize_t read;
+
+     fp = fopen (bat_interface_operstate_file, "r");
+
+     if (!fp) {
+          MU_SET_ERROR(error, errno);
+          free(bat_interface_operstate_file);
+          free(bat_interface_carrier_file);
+          return false;
+     }
+
+     if ((read = getline(&line, &len, fp)) != -1) {
+          fclose(fp);
+          if (!strcmp("false\n", line)) {
+               free(bat_interface_operstate_file);
+               free(bat_interface_carrier_file);
+               free(line);
+               return false;
+          } else if (!strcmp("up\n", line)) {
+               free(bat_interface_operstate_file);
+          } else if (!strcmp("unknown\n", line)) {
+               free(bat_interface_operstate_file);
+          } else {
+               free(bat_interface_operstate_file);
+               free(bat_interface_carrier_file);
+               free(line);
+               return false;
+          }
+     } else {
+          MU_SET_ERROR(error, errno);
+          free(bat_interface_operstate_file);
+          free(bat_interface_carrier_file);
+          fclose(fp);
+          return false;
+     }
+
+     fp = fopen (bat_interface_carrier_file, "r");
+
+     if (!fp) {
+          MU_SET_ERROR(error, errno);
+          free(bat_interface_carrier_file);
+          free(line);
+          return false;
+     }
+
+     if ((read = getline(&line, &len, fp)) != -1) {
+          fclose(fp);
+          if (!strcmp("1\n", line)) {
+               free(bat_interface_carrier_file);
+               free(line);
+               return true;
+          } else {
+               free(bat_interface_carrier_file);
+               free(line);
+               return false;
+          }
+     } else {
+          MU_SET_ERROR(error, errno);
+          free(bat_interface_carrier_file);
+          fclose(fp);
+          return false;
+     }
+}
+
 #endif                          /* __linux */
