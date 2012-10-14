@@ -27,50 +27,47 @@ add_bat_if() {
   local INTERFACE_NAME="$1"
 
   if [ -z "$INTERFACE_NAME" ]; then
-    batctl if add $NETWORK_INTERFACE
-    if [ -z "$(batctl if | grep $NETWORK_INTERFACE)" ]; then
-      echo "Enabling bat interface failed. Aborting..."
-      exit 1
-    fi
-  else
-    batctl -m "$INTERFACE_NAME" if add $NETWORK_INTERFACE
-    if [ -z "$(batctl -m $INTERFACE_NAME if | grep $NETWORK_INTERFACE)" ]; then
-      echo "Enabling bat interface failed. Aborting..."
-      exit 1
-    fi
+    INTERFACE_NAME="bat0"
   fi
+
+  batctl -m "$INTERFACE_NAME" if add $NETWORK_INTERFACE
+  if [ -z "$(batctl -m $INTERFACE_NAME if | grep $NETWORK_INTERFACE)" ]; then
+    echo "Enabling bat interface failed. Aborting..."
+    exit 1
+  fi
+
 }
 
 del_bat_if() {
   local INTERFACE_NAME="$1"
 
   if [ -z "$INTERFACE_NAME" ]; then
-    batctl if del $NETWORK_INTERFACE
-  else
-    batctl -m "$INTERFACE_NAME" if del $NETWORK_INTERFACE
+    INTERFACE_NAME="bat0"
   fi
+
+  batctl -m "$INTERFACE_NAME" if del $NETWORK_INTERFACE
 }
 
 enable_bat_if() {
   local INTERFACE_NAME="$1"
 
+  if [ -z "$INTERFACE_NAME" ]; then
+    INTERFACE_NAME="bat0"
+  fi
+
   ifconfig "$NETWORK_INTERFACE" up
 
-  if [ -z "$INTERFACE_NAME" ]; then
-    ifconfig "bat0" up
-  else
-    ifconfig "$INTERFACE_NAME" up
-  fi
+  ifconfig "$INTERFACE_NAME" up
 }
 
 bat_if_address() {
   local INTERFACE_NAME="$1"
 
   if [ -z "$INTERFACE_NAME" ]; then
-    ifconfig bat0 | grep HWaddr | egrep -o "([[:alnum:]][[:alnum:]][:]){5}[[:alnum:]][[:alnum:]]"
-  else
-    ifconfig $INTERFACE_NAME | grep HWaddr | egrep -o "([[:alnum:]][[:alnum:]][:]){5}[[:alnum:]][[:alnum:]]"
+    INTERFACE_NAME="bat0"
   fi
+
+  ifconfig $INTERFACE_NAME | grep HWaddr | egrep -o "([[:alnum:]][[:alnum:]][:]){5}[[:alnum:]][[:alnum:]]"
 }
 
 mount_debug_fs() {
