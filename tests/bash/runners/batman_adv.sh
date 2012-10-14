@@ -73,6 +73,26 @@ bat_if_address() {
   fi
 }
 
+mount_debug_fs() {
+  if [ -z "$(mount | grep debugfs)" ]; then
+    mount -t debugfs none /sys/kernel/debug
+  fi
+}
+
+n_bat_nodes() {
+  local INTERFACE_NAME="$1"
+
+  if [ -z "$INTERFACE_NAME" ]; then
+    INTERFACE_NAME="bat0"
+  fi
+
+  if [ -z "$(cat /sys/kernel/debug/batman_adv/$INTERFACE_NAME/originators | grep 'No batman nodes in range...')" ]; then
+    echo -n "0"
+  else
+    echo -n $(($(cat /sys/kernel/debug/batman_adv/$INTERFACE_NAME/originators | wc | awk '{ print $1 }') - 2))
+  fi
+}
+
 test_case () {
     local TEST_NAME="$1"
     local TEST_BINARY="$2"
@@ -207,6 +227,36 @@ insert_kmod
 add_bat_if "not_default"
 BAT_IF_ADDR=$(bat_if_address "not_default")
 test_case "Named bat interface MAC address" "if_hwaddr_named" "$BAT_IF_ADDR" "" ""
+del_bat_if "not_default"
+
+########
+
+remove_kmod
+test_case "Number of nodes (default if)" "n_nodes_if_default" "0" "\t" "\t\t"
+
+####
+
+insert_kmod
+add_bat_if
+enable_bat_if
+mount_debug_fs
+NNODES=$(n_bat_nodes)
+test_case "Number of nodes (default if)" "n_nodes_if_default" "$NNODES" "\t" "\t\t"
+del_bat_if
+
+####
+
+remove_kmod
+test_case "Number of nodes (named if)" "n_nodes_if_named" "0" "\t" "\t\t"
+
+####
+
+insert_kmod
+add_bat_if "not_default"
+enable_bat_if "not_default"
+mount_debug_fs
+NNODES=$(n_bat_nodes "not_default")
+test_case "Number of nodes (named if)" "n_nodes_if_named" "$NNODES" "\t" "\t\t"
 del_bat_if "not_default"
 
 ########
