@@ -19,7 +19,7 @@
 
 /// Struct for a linked list of node MAC addresses
 struct mu_bat_mesh_node {
-     char mac_addr[13];
+     char mac_addr[18];
      struct mu_bat_mesh_node *next;
 };
 
@@ -113,13 +113,13 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error);
  * @brief Get the addresses of the nodes in the mesh.
  *
  * @param *error See documetation for *error.
- * @param *n_nodes Pointer to an integer that will hold the number of nodes in
- *                 the mesh. Count includes self.
+ * @param *n_nodes Pointer to an integer that will hold the number of nodes
+ *                 addresses the mesh. Does not include self.
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  *
- * @return Pointer to an a linked list of nodes in the mesh. The list has to be
- *         free()'d by the caller.
+ * @return Pointer to an a linked list of nodes in the mesh. The links in this
+ *         list have to be free()'d by the caller.
  * @retval NULL Returned on failure.
  */
 struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(

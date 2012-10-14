@@ -358,7 +358,82 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
 
      free(line);
      fclose(fp);
-     return counter - 2; // First two lines are header lines.
+     return counter - 2 + 1; // First two lines are header lines + self.
 }
 
+struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
+                                                           char *interface_name,
+                                                           int  *n_nodes,
+                                                           int  *error)
+{
+     MU_SET_ERROR(error, 0);
+
+     //FIXME: function should dynamically determine the mount path of debugfs
+     //       and not assume /sys/kernel/debug.
+
+     char *bat_interface_debug_path_root = "/sys/kernel/debug/batman_adv/";
+     char *bat_interface_originators_file;
+
+     if (!interface_name) {
+          bat_interface_originators_file = calloc(
+                                    strlen(bat_interface_debug_path_root)
+                                    + strlen("bat0")
+                                    + strlen("/originators") + 1,
+                                    sizeof(char));
+          //FIXME: Check if calloc succeeded.
+          strcat(bat_interface_originators_file, bat_interface_debug_path_root);
+          strcat(bat_interface_originators_file, "bat0/originators");
+
+     } else {
+          bat_interface_originators_file =
+                                  calloc(strlen(bat_interface_debug_path_root)
+                                  + strlen(interface_name)
+                                  + strlen("/originators")
+                                  + 1, sizeof(char));
+          //FIXME: Check if calloc succeeded.
+          strcat(bat_interface_originators_file, bat_interface_debug_path_root);
+          strcat(bat_interface_originators_file, interface_name);
+          strcat(bat_interface_originators_file, "/originators");
+     }
+
+     FILE *fp;
+     char *line = NULL;
+     size_t len = 0;
+     ssize_t read;
+     struct mu_bat_mesh_node *first_node = NULL;
+     struct mu_bat_mesh_node *current_node = NULL;
+
+     fp = fopen (bat_interface_originators_file, "r");
+     free(bat_interface_originators_file);
+
+     if (!fp) {
+          MU_SET_ERROR(error, errno);
+          return NULL;
+     }
+
+     *n_nodes = 0;
+     int counter = 0;
+
+     while ((read = getline(&line, &len, fp)) != -1) {
+          counter++;
+          if (!strcmp(line, "No batman nodes in range ...\n")) {
+               free(line);
+               fclose(fp);
+               *n_nodes = 0;
+               return NULL;
+          }
+          if (counter > 2) {
+               *n_nodes += 1;
+               current_node = malloc(sizeof(struct mu_bat_mesh_node));
+               current_node->next = first_node;
+               memcpy(current_node->mac_addr, line, sizeof(char) * 17);
+               current_node->mac_addr[17] = '\0';
+               first_node = current_node;
+          }
+     }
+
+     free(line);
+     fclose(fp);
+     return first_node;
+}
 #endif                          /* __linux */
