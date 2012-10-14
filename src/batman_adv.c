@@ -62,6 +62,8 @@ bool mu_batman_adv_kmod_available(int *error)
 
 bool mu_batman_adv_kmod_loaded(int *error)
 {
+     MU_SET_ERROR(error, 0);
+
      // FIXME: Checking the sys filesystem should work since 2010.0.0, not before.
      if (!access("/sys/module/batman_adv/version", F_OK)) {
           return true;
@@ -77,6 +79,8 @@ bool mu_batman_adv_kmod_loaded(int *error)
 
 char *mu_batman_adv_kmod_version(int *error)
 {
+     MU_SET_ERROR(error, 0);
+
      FILE *fp;
      char *line = NULL;
      size_t len = 0;
@@ -102,6 +106,8 @@ char *mu_batman_adv_kmod_version(int *error)
 
 bool mu_batman_adv_if_available(char *interface_name, int *error)
 {
+     MU_SET_ERROR(error, 0);
+
      char *bat_interface_path_root = "/sys/devices/virtual/net/";
      char *bat_interface_path;
 
@@ -123,7 +129,8 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
 
 	   // Checking the sys filesystem should work since 2010.0.0, not before.
 	   if (!access (bat_interface_path, F_OK)) {
-		 return true;
+	        free(bat_interface_path);
+		      return true;
 	   } else {
 		      if (errno == ENOENT) {
 		           free(bat_interface_path);
@@ -138,6 +145,8 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
 
 bool mu_batman_adv_if_up(char *interface_name, int *error)
 {
+     MU_SET_ERROR(error, 0);
+
      char *bat_interface_path_root = "/sys/devices/virtual/net/";
      char *bat_interface_operstate_file;
      char *bat_interface_carrier_file;
@@ -184,10 +193,10 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
      ssize_t read;
 
      fp = fopen (bat_interface_operstate_file, "r");
+     free(bat_interface_operstate_file);
 
      if (!fp) {
           MU_SET_ERROR(error, errno);
-          free(bat_interface_operstate_file);
           free(bat_interface_carrier_file);
           return false;
      }
@@ -195,33 +204,30 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
      if ((read = getline(&line, &len, fp)) != -1) {
           fclose(fp);
           if (!strcmp("false\n", line)) {
-               free(bat_interface_operstate_file);
                free(bat_interface_carrier_file);
                free(line);
                return false;
           } else if (!strcmp("up\n", line)) {
-               free(bat_interface_operstate_file);
+               ;
           } else if (!strcmp("unknown\n", line)) {
-               free(bat_interface_operstate_file);
+               ;
           } else {
-               free(bat_interface_operstate_file);
                free(bat_interface_carrier_file);
                free(line);
                return false;
           }
      } else {
           MU_SET_ERROR(error, errno);
-          free(bat_interface_operstate_file);
           free(bat_interface_carrier_file);
           fclose(fp);
           return false;
      }
 
      fp = fopen (bat_interface_carrier_file, "r");
+     free(bat_interface_carrier_file);
 
      if (!fp) {
           MU_SET_ERROR(error, errno);
-          free(bat_interface_carrier_file);
           free(line);
           return false;
      }
@@ -229,17 +235,14 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
      if ((read = getline(&line, &len, fp)) != -1) {
           fclose(fp);
           if (!strcmp("1\n", line)) {
-               free(bat_interface_carrier_file);
                free(line);
                return true;
           } else {
-               free(bat_interface_carrier_file);
                free(line);
                return false;
           }
      } else {
           MU_SET_ERROR(error, errno);
-          free(bat_interface_carrier_file);
           fclose(fp);
           return false;
      }
@@ -247,6 +250,8 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
 
 char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
 {
+     MU_SET_ERROR(error, 0);
+
      char *bat_interface_path_root = "/sys/devices/virtual/net/";
      char *bat_interface_address;
 
@@ -276,14 +281,13 @@ char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
      ssize_t read;
 
      fp = fopen (bat_interface_address, "r");
+     free(bat_interface_address);
 
      if (!fp) {
           MU_SET_ERROR(error, errno);
-          free(bat_interface_address);
           return NULL;
      }
 
-     free(bat_interface_address);
 
      if ((read = getline(&line, &len, fp)) != -1) {
           fclose(fp);
@@ -300,6 +304,8 @@ char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
 
 unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
 {
+     MU_SET_ERROR(error, 0);
+
      //FIXME: function should dynamically determine the mount path of debugfs
      //       and not assume /sys/kernel/debug.
 
