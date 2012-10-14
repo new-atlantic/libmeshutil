@@ -349,7 +349,7 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
 
      while ((read = getline(&line, &len, fp)) != -1) {
           counter++;
-          if (!strcmp(line, "No batman nodes in range...\n")) {
+          if (!strcmp(line, "No batman nodes in range ...\n")) {
                free(line);
                fclose(fp);
                return 1; // Count self as one node.
@@ -359,8 +359,6 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
      free(line);
      fclose(fp);
      return counter - 2; // First two lines are header lines.
-
-
 }
 
 #endif                          /* __linux */
