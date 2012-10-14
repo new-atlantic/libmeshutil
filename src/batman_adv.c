@@ -16,9 +16,6 @@
  *
  * - Checks for the availability of the file batman-adv.ko in the module
  *   directory of the currently loaded kernel.
- * - Allocates memory temporarily using malloc().
- * - Is expected to free the malloc'd memory.
- * - Does not check that *error points to accessible memory.
  */
 bool mu_batman_adv_kmod_available(int *error)
 {
