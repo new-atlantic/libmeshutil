@@ -118,7 +118,7 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error);
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  *
- * @return Pointer to an a linked list of nodes in the mesh. The links in this
+ * @return Pointer to a linked list of nodes in the mesh. The links in this
  *         list have to be free()'d by the caller.
  * @retval NULL Returned on failure.
  */
@@ -126,6 +126,44 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
                                                            char *interface_name,
                                                            int  *n_nodes,
                                                            int  *error);
+
+/**
+ * @brief Get the addresses of neighbouring nodes (next hops) in the mesh.
+ *
+ * @param *error See documetation for *error.
+ * @param *n_nodes Pointer to an integer that will hold the number of next hop
+ *                 addresses the mesh.
+ * @param  potential If true, includes potential next hops (i.e. routes not
+ *                   used, but available).
+ * @param *interface_name Name of the interface to be looked for. If NULL is
+ *                        passed looks for "bat0", the default interface.
+ *
+ * @return Pointer to a linked list of next hop addresses. The links in this
+ *         list have to be free()'d by the caller.
+ * @retval NULL Returned on failure.
+ */
+struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
+                                                          char *interface_name,
+                                                          bool  potential,
+                                                          int  *n_nodes,
+                                                          int  *error);
+
+/**
+ * @brief Checks whether a node is a next hop
+ *
+ * @param *error See documetation for *error.
+ * @param  potential If true, includes potential next hops (i.e. routes not
+ *                   used, but available).
+ * @param *interface_name Name of the interface to be looked for. If NULL is
+ *                        passed looks for "bat0", the default interface.
+ *
+ * @retval true Node is a next hop.
+ * @retval false Node is not a next hop. Also returned on error.
+ *
+ */
+bool mu_batman_adv_node_is_next_hop(struct mu_bat_mesh_node *node,
+                                    bool potential,
+                                    int  *error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
