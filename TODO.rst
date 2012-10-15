@@ -7,7 +7,6 @@ Before first release
 
 * Doxygen documentation
     - Missing config file
-* Missing ChangeLog
 * Check that all allocated memory and opened file descriptors are closed in
   functions before returning.
 
