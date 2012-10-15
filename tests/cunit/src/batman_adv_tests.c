@@ -8,7 +8,7 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 
-#include "../../../src/batman_adv.c"
+#include "batman_adv.c"
 
 #define UNIMPLMENTED "Test not implemented"
 
