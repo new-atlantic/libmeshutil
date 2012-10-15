@@ -571,19 +571,20 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
    bool duplicate = false;
 
    while ((read = getline(&line, &len, fp)) != -1) {
-      if(!potential) {
-         #pragma message "TODO: Next hop retrieval not tested thoroughly."
-         counter++;
-         if (!strcmp(line, NO_NODES_IN_RANGE_STR)) {
-            free(line);
-            fclose(fp);
-            if(n_nodes) {
-               *n_nodes = 0;
-            }
-            return NULL;
-         }
+      #pragma message "TODO: Next hop retrieval not tested thoroughly."
+      counter++;
 
-         if (counter > 2) {
+      if (!strcmp(line, NO_NODES_IN_RANGE_STR)) {
+         free(line);
+         fclose(fp);
+         if(n_nodes) {
+            *n_nodes = 0;
+         }
+         return NULL;
+      }
+
+      if (counter > 2) {
+         if(!potential) {
             memcpy(address_tmp, strchr(line, ')') +2, sizeof(char) * 17);
             address_tmp[17] = '\0';
 
@@ -609,16 +610,55 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
             } else {
                duplicate = false;
             }
+         } else /* if (potential == true) */ {
+            char *tmp_line = line;
+
+            tmp_line = strchr(line, ']');
+            if(tmp_line) {
+               tmp_line = tmp_line + 2;
+            }
+
+            do {
+               if(strchr(tmp_line, '(')) {
+                  memcpy(address_tmp, tmp_line + 1, sizeof(char) * 17);
+                  address_tmp[17] = '\0';
+                  tmp_line = strchr(tmp_line, ')');
+                  if(tmp_line) {
+                     tmp_line = tmp_line + 1;
+                  }
+               } else {
+                  tmp_line = NULL;
+               }
+
+               current_node = first_node;
+               while(current_node) {
+                  if(!strcmp(current_node->mac_addr, address_tmp)) {
+                     duplicate = true;
+                     current_node = NULL;
+                  } else {
+                     current_node = current_node->next;
+                  }
+               }
+
+               if(!duplicate) {
+                  if(n_nodes) {
+                     *n_nodes += 1;
+                  }
+                  current_node = malloc(sizeof(struct mu_bat_mesh_node));
+                  current_node->next = first_node;
+                  memcpy(current_node->mac_addr, address_tmp, sizeof(char) * 17);
+                  current_node->mac_addr[17] = '\0';
+                  first_node = current_node;
+               } else {
+                  duplicate = false;
+               }
+            } while(tmp_line);
          }
-      } else {
-         #pragma message "TODO: Support for potential next hops unimplemented!"
-         free(line);
-         fclose(fp);
-         return NULL;
       }
    }
 
    free(line);
+   free(address_tmp);
    fclose(fp);
    return first_node;
 }
