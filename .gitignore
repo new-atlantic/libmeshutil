@@ -1,4 +1,5 @@
 build/
+build-analyze/
 CMakeCache.txt
 CMakeFiles
 Testing/

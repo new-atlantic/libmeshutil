@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "../../../src/batman_adv.h"
+#include "batman_adv.h"
 
 int main (void) {
   char *mac_addr = mu_batman_adv_if_hwaddr("not_default", NULL);

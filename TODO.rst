@@ -15,7 +15,6 @@ Before first release
 Before a stable release
 -----------------------
 
-* BUG: make fails if building under build/ due to a relative path error
 * Support for multiple versions
 * Testing of multiple versions
 * Implementation notes for all functions
