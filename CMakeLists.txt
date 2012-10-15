@@ -24,4 +24,4 @@ install(DIRECTORY src/ DESTINATION include/meshutil
 enable_testing ()
 add_subdirectory("tests/bash")
 find_library (CUNIT_LIBRARY cunit)
-add_subdirectory("tests/cunit/")
+add_subdirectory("tests/cunit")
