@@ -2,10 +2,9 @@ cmake_minimum_required (VERSION 2.8)
 project (meshutil C)
 set (meshutil_VERSION_MAJOR 0)
 set (meshutil_VERSION_MINOR 0)
-set (meshutil_PATCH_VERSION 0)
+set (meshutil_PATCH_VERSION 1)
 set (meshutil_VERSION
-   ${meshutil_VERSION_MAJOR}.${meshutil_VERSION_MINOR}.${meshutil_PATCH_VERSION})
-add_definitions ('-Dmeshutil_VERSION="${meshutil_VERSION}"')
+   "${meshutil_VERSION_MAJOR}.${meshutil_VERSION_MINOR}.${meshutil_PATCH_VERSION}")
 
 add_library (meshutil SHARED src/batman_adv.c)
 add_library (meshutil_static STATIC src/batman_adv.c)
