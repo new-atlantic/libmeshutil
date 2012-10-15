@@ -43,8 +43,9 @@ mounted. This requires root (or CAP_SYS_ADMIN?) privileges.
 Testing
 -------
 
-The shell based batman_adv tests require root privileges to run and will fail
-if run without.
+The bash based batman_adv tests require root privileges to run and will fail
+if run without. The bash based test suite is also quite brittle with false
+negatives due to race conditions etc.
 
 License
 -------
