@@ -38,8 +38,8 @@
 
 /// Struct for a linked list of node MAC addresses
 struct mu_bat_mesh_node {
-     char mac_addr[18];
-     struct mu_bat_mesh_node *next;
+   char mac_addr[18];
+   struct mu_bat_mesh_node *next;
 };
 
 /**
@@ -186,3 +186,4 @@ bool mu_batman_adv_node_is_next_hop(struct mu_bat_mesh_node *node,
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
+
