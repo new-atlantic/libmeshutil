@@ -35,7 +35,10 @@ At the moment all the functions for *B.A.T.M.A.N. advanced* have only been
 tested with version 2011.4.0 and compatiblity with other versions is not
 guaranteed. Specifically versions preceding 2010.0.0 should not work.
 Compatibility and testing with multiple versions is the aim, but there is
-no intention to support versions older thatn 2010.0.0.
+no intention to support versions older than 2010.0.0.
+
+Some functionality of batman_adv requires the Linux debug filesystem to be
+mounted. This requires root (or CAP_SYS_ADMIN?) privileges.
 
 Testing
 -------
