@@ -113,6 +113,25 @@ bat_node_addresses() {
   fi
 }
 
+bat_actual_next_hop_addresses() {
+  local INTERFACE_NAME="$1"
+
+  if [ -z "$INTERFACE_NAME" ]; then
+    INTERFACE_NAME="bat0"
+  fi
+
+  if [ -z "$(cat /sys/kernel/debug/batman_adv/$INTERFACE_NAME/originators | tail -n +3 | grep -o ').*' | cut -c 3-19)" ]; then
+    echo -n "NO NODES"
+  else
+    echo -n "$(($(cat /sys/kernel/debug/batman_adv/$INTERFACE_NAME/originators | tail -n +3 | grep -o ').*' | cut -c 3-19 | wc | awk '{ print $1 }'))) "
+    addresses="$(cat /sys/kernel/debug/batman_adv/$INTERFACE_NAME/originators | tail -n +3 | grep -o ').*' | cut -c 3-19)"
+    for addr in $addresses; do
+      tmp=" $addr$tmp"
+    done
+    echo -n $tmp
+  fi
+}
+
 test_case () {
     local TEST_NAME="$1"
     local TEST_BINARY="$2"
@@ -346,11 +365,26 @@ mount_debug_fs
 
 sleep 60
 
+#########################################
+# 3.2.1.1 Check number of nodes in mesh #
+#########################################
+
 NNODES=$(n_bat_nodes)
 test_case "Number of nodes (default if)" "n_nodes_if_default" "$NNODES" "\t" "\t\t"
 
+#####################################
+# 3.2.1.2 Check mesh node addresses #
+#####################################
+
 ADDRESSES=$(bat_node_addresses)
 test_case "Node addresses (default if)" "node_addresses_if_default" "$ADDRESSES" "\t" "\t"
+
+################################################
+# 3.2.1.3 Check mesh actual next hop addresses #
+################################################
+
+ADDRESSES=$(bat_actual_next_hop_addresses)
+test_case "Actual next hop addresses (def if)" "actual_next_hop_addr_default" "$ADDRESSES" "" "\t"
 
 del_bat_if
 remove_kmod
@@ -367,11 +401,26 @@ mount_debug_fs
 
 sleep 60
 
+#########################################
+# 3.2.2.1 Check number of nodes in mesh #
+#########################################
+
 NNODES=$(n_bat_nodes "not_default")
 test_case "Number of nodes (named if)" "n_nodes_if_named" "$NNODES" "\t" "\t\t"
 
-ADDRESSES=$(bat_node_addresses "not_default")
+#####################################
+# 3.2.2.2 Check mesh node addresses #
+#####################################
+
+ADDRESSES=$(bat_actual_next_hop_addresses "not_default")
 test_case "Node addresses (named if)" "node_addresses_if_named" "$ADDRESSES" "\t" "\t"
+
+################################################
+# 3.2.2.3 Check mesh actual next hop addresses #
+################################################
+
+ADDRESSES=$(bat_node_addresses "not_default")
+test_case "Actual next hop addresses (named if)" "actual_next_hop_addr_named" "$ADDRESSES" "" "\t"
 
 del_bat_if "not_default"
 

@@ -499,5 +499,117 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
    return first_node;
 }
 
+struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
+                                                          char *interface_name,
+                                                          bool  potential,
+                                                          int  *n_nodes,
+                                                          int  *error)
+{
+   MU_SET_ERROR(error, 0);
+
+   //FIXME: function should dynamically determine the mount path of debugfs
+   //       and not assume /sys/kernel/debug.
+   char *bat_interface_originators_file;
+
+   if (!interface_name) {
+      bat_interface_originators_file = calloc(
+                                    strlen(BATMAN_ADV_DEBUGFS_DIR)
+                                    + strlen("bat0/originators") + 1,
+                                    sizeof(char));
+
+      if(!bat_interface_originators_file) {
+         MU_SET_ERROR(error, errno);
+         return false;
+      }
+
+      strcat(bat_interface_originators_file, BATMAN_ADV_DEBUGFS_DIR);
+      strcat(bat_interface_originators_file, "bat0/originators");
+
+   } else {
+      bat_interface_originators_file =
+                                  calloc(strlen(BATMAN_ADV_DEBUGFS_DIR)
+                                  + strlen(interface_name)
+                                  + strlen("/originators")
+                                  + 1, sizeof(char));
+
+      if(!bat_interface_originators_file) {
+         MU_SET_ERROR(error, errno);
+         return false;
+      }
+
+      strcat(bat_interface_originators_file, BATMAN_ADV_DEBUGFS_DIR);
+      strcat(bat_interface_originators_file, interface_name);
+      strcat(bat_interface_originators_file, "/originators");
+   }
+
+   FILE *fp;
+   char *line = NULL;
+   size_t len = 0;
+   ssize_t read;
+   struct mu_bat_mesh_node *first_node = NULL;
+   struct mu_bat_mesh_node *current_node = NULL;
+   char *address_tmp = malloc(sizeof(char) * 18);
+
+   fp = fopen (bat_interface_originators_file, "r");
+   free(bat_interface_originators_file);
+
+   if (!fp) {
+      MU_SET_ERROR(error, errno);
+      return NULL;
+   }
+
+   *n_nodes = 0;
+   int counter = 0;
+   bool duplicate = false;
+
+   while ((read = getline(&line, &len, fp)) != -1) {
+      if(!potential) {
+         #pragma message "TODO: Next hop retrieval not tested thoroughly."
+         counter++;
+         if (!strcmp(line, NO_NODES_IN_RANGE_STR)) {
+            free(line);
+            fclose(fp);
+            *n_nodes = 0;
+            return NULL;
+         }
+
+         if (counter > 2) {
+            memcpy(address_tmp, strchr(line, ')') +2, sizeof(char) * 17);
+            address_tmp[17] = '\0';
+
+            current_node = first_node;
+            while(current_node) {
+               if(!strcmp(current_node->mac_addr, address_tmp)) {
+                  duplicate = true;
+                  current_node = NULL;
+               } else {
+                  current_node = current_node->next;
+               }
+            }
+
+            if(!duplicate) {
+               *n_nodes += 1;
+               current_node = malloc(sizeof(struct mu_bat_mesh_node));
+               current_node->next = first_node;
+               memcpy(current_node->mac_addr, address_tmp, sizeof(char) * 17);
+               current_node->mac_addr[17] = '\0';
+               first_node = current_node;
+            } else {
+               duplicate = false;
+            }
+         }
+      } else {
+         #pragma message "TODO: Support for potential next hops unimplemented!"
+         free(line);
+         fclose(fp);
+         return NULL;
+      }
+   }
+
+   free(line);
+   fclose(fp);
+   return first_node;
+}
+
 #endif                          /* __linux */
 
