@@ -16,16 +16,16 @@ the network includes measures such as the number of nodes in the network and
 addresses of direct and potential next hops. The exact information accessible
 via the APIs depends on the routing protocol (and version) in question.
 
-For the programming of applications that are not tied to a specific routing
-protocol it is preferrable to use *libmeshaware* which provides a protocol
-independent abstraction layer over *libmeshutil* as well as bindings for
-various programming languages.
+For the programming of applications that are not meant to be tied to a specific
+routing  protocol it is preferrable to use *libmeshaware* which provides a
+routing protocol independent abstraction layer over *libmeshutil* as well as
+bindings for various programming languages.
 
 Supported routing protocols
 ---------------------------
 
 At the moment *libmeshutil* only supports *B.A.T.M.A.N. advanced*, which
-requires the Linux kernel. Support for other protocols such as *BABEL* and
+depends on the Linux kernel. Support for other protocols such as *BABEL* and
 *olsr* is planned.
 
 B.A.T.M.A.N. advanced
@@ -38,7 +38,7 @@ Compatibility and testing with multiple versions is the aim, but there is
 no intention to support versions older than 2010.0.0.
 
 Some functionality of batman_adv requires the Linux debug filesystem to be
-mounted. This requires root (or CAP_SYS_ADMIN?) privileges.
+mounted. Mounting it requires root (or CAP_SYS_ADMIN?) privileges.
 
 Testing
 -------
