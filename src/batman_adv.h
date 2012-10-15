@@ -180,7 +180,9 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
  * @retval false Node is not a next hop. Also returned on error.
  *
  */
-bool mu_batman_adv_node_is_next_hop(struct mu_bat_mesh_node *node,
+bool mu_batman_adv_node_is_next_hop(
+                                    char *interface_name,
+                                    struct mu_bat_mesh_node *node,
                                     bool potential,
                                     int  *error);
 

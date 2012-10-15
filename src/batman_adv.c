@@ -472,7 +472,9 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
       return NULL;
    }
 
-   *n_nodes = 0;
+   if(n_nodes) {
+      *n_nodes = 0;
+   }
    int counter = 0;
 
    while ((read = getline(&line, &len, fp)) != -1) {
@@ -480,12 +482,16 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
       if (!strcmp(line, NO_NODES_IN_RANGE_STR)) {
          free(line);
          fclose(fp);
-         *n_nodes = 0;
+         if(n_nodes) {
+            *n_nodes = 0;
+         }
          return NULL;
       }
 
       if (counter > 2) {
-         *n_nodes += 1;
+         if(n_nodes) {
+            *n_nodes += 1;
+         }
          current_node = malloc(sizeof(struct mu_bat_mesh_node));
          current_node->next = first_node;
          memcpy(current_node->mac_addr, line, sizeof(char) * 17);
@@ -558,7 +564,9 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
       return NULL;
    }
 
-   *n_nodes = 0;
+   if(n_nodes) {
+      *n_nodes = 0;
+   }
    int counter = 0;
    bool duplicate = false;
 
@@ -569,7 +577,9 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
          if (!strcmp(line, NO_NODES_IN_RANGE_STR)) {
             free(line);
             fclose(fp);
-            *n_nodes = 0;
+            if(n_nodes) {
+               *n_nodes = 0;
+            }
             return NULL;
          }
 
@@ -588,7 +598,9 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
             }
 
             if(!duplicate) {
-               *n_nodes += 1;
+               if(n_nodes) {
+                  *n_nodes += 1;
+               }
                current_node = malloc(sizeof(struct mu_bat_mesh_node));
                current_node->next = first_node;
                memcpy(current_node->mac_addr, address_tmp, sizeof(char) * 17);
@@ -609,6 +621,43 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
    free(line);
    fclose(fp);
    return first_node;
+}
+
+bool mu_batman_adv_node_is_next_hop(
+                                    char *interface_name,
+                                    struct mu_bat_mesh_node *node,
+                                    bool potential,
+                                    int  *error)
+{
+   MU_SET_ERROR(error, 0);
+
+   struct mu_bat_mesh_node *next_hop_node;
+   struct mu_bat_mesh_node *passed_node;
+
+   if(!node) {
+      // FIXME: Set error?
+      return false;
+   } else {
+      node->mac_addr[17] = '\0';
+   }
+
+   next_hop_node = mu_batman_adv_next_hop_addresses(interface_name,
+                                           potential, NULL, error);
+   if (!next_hop_node) {
+      MU_SET_ERROR(error, errno);
+      return false;
+   } else {
+      while(next_hop_node) {
+         if(!strcmp(next_hop_node->mac_addr, node->mac_addr)) {
+            return true;
+         }
+         passed_node = next_hop_node;
+         next_hop_node = next_hop_node->next;
+         free(passed_node);
+      }
+
+      return false;
+   }
 }
 
 #endif                          /* __linux */
