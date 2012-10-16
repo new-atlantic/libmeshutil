@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// @file batman_adv.c
+/// @file
 
 #ifdef __linux
 
@@ -33,15 +33,23 @@
 #include "meshutil.h"
 #include "batman_adv.h"
 
+/// String in a batman_adv interface originator table indicating that no
+/// nodes are available.
 #define NO_NODES_IN_RANGE_STR "No batman nodes in range ...\n"
+/// Path to the root of the directory containting Linux kernel modules.
 #define KERNEL_MODULE_ROOT "/lib/modules/"
+/// Path to batman_adv kernel module under a specific kernel version
+/// module directory.
 #define BATMAN_ADV_KMOD_PATH "/kernel/net/batman-adv/batman-adv.ko"
+/// Path to the version of the batman_adv kernel module in the sys filesystem.
 #define BATMAN_ADV_KMOD_VERSION_PATH "/sys/module/batman_adv/version"
+/// Path to the sys filesystem directory containing virtual network devices.
 #define VIRTUAL_NETWORK_IF_PATH_ROOT "/sys/devices/virtual/net/"
+/// Path to the batman_adv directory under the Linux debug filesystem.
+/// TODO: Only works when debugfs is mounted to the default location.
 #define BATMAN_ADV_DEBUGFS_DIR "/sys/kernel/debug/batman_adv/"
 
 /* Implementation notes:
- *
  * - Checks for the availability of the file batman-adv.ko in the module
  *   directory of the currently loaded kernel.
  */
@@ -85,11 +93,15 @@ bool mu_batman_adv_kmod_available(int *error)
    }
 }
 
+/* Implementation notes:
+ * - Checks that the kernel module version file is available under sysfs.
+ */
 bool mu_batman_adv_kmod_loaded(int *error)
 {
    MU_SET_ERROR(error, 0);
 
-   // VERIFY: Checking the sys filesystem should work since 2010.0.0, not before.
+   /// TODO: VERIFY! Checking the sys filesystem should work since 2010.0.0,
+   ///       not before.
    if (!access(BATMAN_ADV_KMOD_VERSION_PATH, F_OK)) {
       return true;
    } else if (errno == ENOENT) {
@@ -100,6 +112,9 @@ bool mu_batman_adv_kmod_loaded(int *error)
    }
 }
 
+/* Implementation notes:
+ * - Reads the kernel module version file from sysfs.
+ */
 char *mu_batman_adv_kmod_version(int *error)
 {
    MU_SET_ERROR(error, 0);
@@ -127,6 +142,9 @@ char *mu_batman_adv_kmod_version(int *error)
    }
 }
 
+/* Implementation notes:
+ * - Checks that the bat interface directory is available under sysfs.
+ */
 bool mu_batman_adv_if_available(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
@@ -156,20 +174,24 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
       strcat(bat_interface_path, interface_name);
    }
 
-	// Checking the sys filesystem should work since 2010.0.0, not before.
-	if (!access (bat_interface_path, F_OK)) {
+   // TODO: Checking the sys filesystem should work since 2010.0.0, not before.
+   if (!access (bat_interface_path, F_OK)) {
       free(bat_interface_path);
       return true;
-	} else if (errno == ENOENT) {
+   } else if (errno == ENOENT) {
       free(bat_interface_path);
-   	return false;
-	} else {
- 		MU_SET_ERROR(error, errno);
-	    free(bat_interface_path);
-   	return false;
+      return false;
+   } else {
+      MU_SET_ERROR(error, errno);
+      free(bat_interface_path);
+      return false;
    }
 }
 
+/* Implementation notes:
+ * - Reads the operstate and carrier files in the bat interface directory
+ *   under sysfs.
+ */
 bool mu_batman_adv_if_up(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
@@ -240,6 +262,7 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
       return false;
    }
 
+   // Check operstate.
    if ((read = getline(&line, &len, fp)) != -1) {
       fclose(fp);
       if (!strcmp("false\n", line)) {
@@ -247,9 +270,9 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
          free(line);
          return false;
       } else if (!strcmp("up\n", line)) {
-         ;
+         ; // We still need to check carrier.
       } else if (!strcmp("unknown\n", line)) {
-         ;
+         ; // We still need to check carrier.
       } else {
          free(bat_interface_carrier_file);
          free(line);
@@ -287,6 +310,9 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
    }
 }
 
+/* Implementation notes:
+ * - Reads the address file in the bat interface directory under sysfs.
+ */
 char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
@@ -337,7 +363,7 @@ char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
 
    if ((read = getline(&line, &len, fp)) != -1) {
       fclose(fp);
-      line[strlen(line)-1] = '\0';
+      line[strlen(line)-1] = '\0'; // Strip trailing new-line.
       return line;
    } else {
       MU_SET_ERROR(error, errno);
@@ -346,12 +372,16 @@ char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
    }
 }
 
+/* Implementation notes:
+ * - Parses the originators table in the bat interface directory under sysfs.
+ */
+/// TODO: Does the return value have to be unsigned?
 unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
 
-   //FIXME: function should dynamically determine the mount path of debugfs
-   //       and not assume /sys/kernel/debug.
+   ///TODO: function should dynamically determine the mount path of debugfs
+   ///      and not assume /sys/kernel/debug.
 
    char *bat_interface_originators_file;
 
@@ -412,9 +442,12 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
 
    free(line);
    fclose(fp);
-   return counter - 2 + 1; // First two lines are header lines + self.
+   return counter - 2 + 1; // Remove two header lines and add self.
 }
 
+/* Implementation notes:
+ * - Parses the originators table in the bat interface directory under sysfs.
+ */
 struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
                                                            char *interface_name,
                                                            int  *n_nodes,
@@ -422,8 +455,8 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
 {
    MU_SET_ERROR(error, 0);
 
-   //FIXME: function should dynamically determine the mount path of debugfs
-   //       and not assume /sys/kernel/debug.
+   /// TODO: function should dynamically determine the mount path of debugfs
+   ///       and not assume /sys/kernel/debug.
    char *bat_interface_originators_file;
 
    if (!interface_name) {
@@ -483,17 +516,19 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
          free(line);
          fclose(fp);
          if(n_nodes) {
-            *n_nodes = 0;
+            *n_nodes = 0; // This function does not count self.
          }
          return NULL;
       }
 
       if (counter > 2) {
+         // Skip header lines.
          if(n_nodes) {
             *n_nodes += 1;
          }
          current_node = malloc(sizeof(struct mu_bat_mesh_node));
          current_node->next = first_node;
+         /// TODO: Validate that a MAC-address is being read.
          memcpy(current_node->mac_addr, line, sizeof(char) * 17);
          current_node->mac_addr[17] = '\0';
          first_node = current_node;
@@ -505,6 +540,9 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
    return first_node;
 }
 
+/* Implementation notes:
+ * - Parses the originators table in the bat interface directory under sysfs.
+ */
 struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
                                                           char *interface_name,
                                                           bool  potential,
@@ -513,8 +551,8 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
 {
    MU_SET_ERROR(error, 0);
 
-   //FIXME: function should dynamically determine the mount path of debugfs
-   //       and not assume /sys/kernel/debug.
+   /// TODO: function should dynamically determine the mount path of debugfs
+   //        and not assume /sys/kernel/debug.
    char *bat_interface_originators_file;
 
    if (!interface_name) {
@@ -576,6 +614,7 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
 
       if (!strcmp(line, NO_NODES_IN_RANGE_STR)) {
          free(line);
+         free(address_tmp);
          fclose(fp);
          if(n_nodes) {
             *n_nodes = 0;
@@ -584,12 +623,12 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
       }
 
       if (counter > 2) {
-         if(!potential) {
+         if(!potential) { // Looking only for actual next hops.
             memcpy(address_tmp, strchr(line, ')') +2, sizeof(char) * 17);
             address_tmp[17] = '\0';
 
             current_node = first_node;
-            while(current_node) {
+            while(current_node) { // Check if address already in linked list.
                if(!strcmp(current_node->mac_addr, address_tmp)) {
                   duplicate = true;
                   current_node = NULL;
@@ -610,8 +649,8 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
             } else {
                duplicate = false;
             }
-         } else /* if (potential == true) */ {
-            char *tmp_line = line;
+         } else { // Looking for potential and actual next hops.
+            char *tmp_line;
 
             tmp_line = strchr(line, ']');
             if(tmp_line) {
@@ -619,19 +658,22 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
             }
 
             do {
-               if(strchr(tmp_line, '(')) {
+               if(strchr(tmp_line, '(')) { // Check that there is still an
+                                           // address in tmp_line.
                   memcpy(address_tmp, tmp_line + 1, sizeof(char) * 17);
                   address_tmp[17] = '\0';
                   tmp_line = strchr(tmp_line, ')');
                   if(tmp_line) {
-                     tmp_line = tmp_line + 1;
+                     tmp_line = tmp_line + 1; // TODO: If we are at the last
+                                              //       address this lands us one
+                                              //       the last new line?!
                   }
                } else {
                   tmp_line = NULL;
                }
 
                current_node = first_node;
-               while(current_node) {
+               while(current_node) { // Check if address already in linked list.
                   if(!strcmp(current_node->mac_addr, address_tmp)) {
                      duplicate = true;
                      current_node = NULL;
@@ -663,6 +705,9 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
    return first_node;
 }
 
+/* Implementation notes:
+ * - Compares a MAC address against mu_batman_adv_next_hop_addresses.
+ */
 bool mu_batman_adv_node_is_next_hop(
                                     char *interface_name,
                                     struct mu_bat_mesh_node *node,
@@ -673,30 +718,33 @@ bool mu_batman_adv_node_is_next_hop(
 
    struct mu_bat_mesh_node *next_hop_node;
    struct mu_bat_mesh_node *passed_node;
+   bool   node_status = false;
 
    if(!node) {
-      // FIXME: Set error?
-      return false;
+      /// TODO: Set error to indicate that pointer was NULL?
+      return node_status;
    } else {
       node->mac_addr[17] = '\0';
    }
 
    next_hop_node = mu_batman_adv_next_hop_addresses(interface_name,
-                                           potential, NULL, error);
+                                                    potential,
+                                                    NULL,
+                                                    error);
    if (!next_hop_node) {
       MU_SET_ERROR(error, errno);
       return false;
    } else {
       while(next_hop_node) {
          if(!strcmp(next_hop_node->mac_addr, node->mac_addr)) {
-            return true;
+            node_status = true;
          }
          passed_node = next_hop_node;
          next_hop_node = next_hop_node->next;
          free(passed_node);
       }
 
-      return false;
+      return node_status;
    }
 }
 
