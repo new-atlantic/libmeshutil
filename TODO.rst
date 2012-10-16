@@ -2,19 +2,11 @@
  Tasks
 =======
 
-Before first release
---------------------
-
-* Doxygen documentation
-    - Missing config file
-* Check that all allocated memory and opened file descriptors are closed in
-  functions before returning.
-
 Before a stable release
 -----------------------
 
 * Support for multiple versions
 * Testing of multiple versions
 * Implementation notes for all functions
-* BUG: batman_adv.sh test fails if bat0 exists before the test is run
-* Embedded version string in meshutil.h
+* BUG: batman_adv.sh test sometimes fails if bat0 exists before the test is run
+* Embed version string in meshutil.h
