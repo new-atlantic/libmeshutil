@@ -650,7 +650,7 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
                duplicate = false;
             }
          } else { // Looking for potential and actual next hops.
-            char *tmp_line = line;
+            char *tmp_line;
 
             tmp_line = strchr(line, ']');
             if(tmp_line) {
