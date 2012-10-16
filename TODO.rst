@@ -10,3 +10,4 @@ Before a stable release
 * Implementation notes for all functions
 * BUG: batman_adv.sh test sometimes fails if bat0 exists before the test is run
 * Embed version string in meshutil.h
+* Make test via CMake should warn about missing privileges for tests
