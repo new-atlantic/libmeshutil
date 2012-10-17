@@ -2,6 +2,11 @@
  Tasks
 =======
 
+batman_adv
+----------
+
+* Retrieve outgoing interface and last seen for a given node.
+
 Before a stable release
 -----------------------
 
