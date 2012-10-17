@@ -186,6 +186,19 @@ bool mu_batman_adv_node_is_next_hop(
                                     bool potential,
                                     int  *error);
 
+/**
+ * @brief Checks via which network interface a node is accessible.
+ *
+ * @param *error See documentation for *error.
+ * @param *node  The node that is to be checked.
+ * @param *interface_name Name of the interface to be looked for. If NULL is
+ *                        passed looks for "bat0", the default interface.
+ */
+char *mu_batman_adv_node_accessed_via_if(
+                                         char   *interface_name,
+                                         struct  mu_bat_mesh_node *node,
+                                         int    *error);
+
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
 
