@@ -49,6 +49,76 @@
 /// TODO: Only works when debugfs is mounted to the default location.
 #define BATMAN_ADV_DEBUGFS_DIR "/sys/kernel/debug/batman_adv/"
 
+/*** STATIC FUNCTIONS ***/
+
+bool interface_dependent_path(char *path_root,
+                              char *interface_name,
+                              char *suffix,
+                              char **path_string,
+                              int  *error)
+{
+   if (!path_root) {
+      return false;
+   }
+
+   if (!interface_name) {
+      if(!suffix) {
+         *path_string = calloc(strlen(path_root)
+                              + strlen("bat0") + 1, sizeof(char));
+         if(!*path_string) {
+            MU_SET_ERROR(error, errno);
+            return false;
+         }
+         strcat(*path_string, path_root);
+         strcat(*path_string, "bat0");
+         return true;
+      } else {
+         *path_string = calloc(strlen(path_root)
+                              + strlen("bat0")
+                              + strlen(suffix) + 1, sizeof(char));
+         if(!*path_string) {
+            MU_SET_ERROR(error, errno);
+            return false;
+         }
+         strcat(*path_string, path_root);
+         strcat(*path_string, "bat0");
+         strcat(*path_string, suffix);
+         return true;
+      }
+
+   } else {
+      if(!suffix) {
+         *path_string = calloc(strlen(path_root)
+                              + strlen(interface_name) + 1,
+                              sizeof(char));
+         if(!*path_string) {
+            MU_SET_ERROR(error, errno);
+            return false;
+         }
+
+         strcat(*path_string, path_root);
+         strcat(*path_string, interface_name);
+         return true;
+      } else {
+         *path_string = calloc(strlen(path_root)
+                              + strlen(interface_name)
+                              + strlen(suffix) + 1,
+                              sizeof(char));
+         if(!*path_string) {
+            MU_SET_ERROR(error, errno);
+            return false;
+         }
+
+         strcat(*path_string, path_root);
+         strcat(*path_string, interface_name);
+         strcat(*path_string, suffix);
+         return true;
+      }
+   }
+}
+
+/*** API FUNCTIONS ***/
+
 /* Implementation notes:
  * - Checks for the availability of the file batman-adv.ko in the module
  *   directory of the currently loaded kernel.
@@ -151,27 +221,12 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
 
    char *bat_interface_path;
 
-   if (!interface_name) {
-      bat_interface_path = calloc(strlen(VIRTUAL_NETWORK_IF_PATH_ROOT)
-                                  + strlen("bat0") + 1, sizeof(char));
-      if(!bat_interface_path) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_path, VIRTUAL_NETWORK_IF_PATH_ROOT);
-      strcat(bat_interface_path, "bat0");
-   } else {
-      bat_interface_path = calloc(strlen(VIRTUAL_NETWORK_IF_PATH_ROOT)
-                                  + strlen(interface_name) + 1,
-                                  sizeof(char));
-      if(!bat_interface_path) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_path, VIRTUAL_NETWORK_IF_PATH_ROOT);
-      strcat(bat_interface_path, interface_name);
+   if (!interface_dependent_path(VIRTUAL_NETWORK_IF_PATH_ROOT,
+                                 interface_name,
+                                 NULL,
+                                 &bat_interface_path,
+                                 error)) {
+      return false;
    }
 
    // TODO: Checking the sys filesystem should work since 2010.0.0, not before.
@@ -199,53 +254,20 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
    char *bat_interface_operstate_file;
    char *bat_interface_carrier_file;
 
-   if (!interface_name) {
-      bat_interface_operstate_file = calloc(strlen(VIRTUAL_NETWORK_IF_PATH_ROOT)
-                                            + strlen("bat0/operstate")
-                                            + 1, sizeof(char));
-      bat_interface_carrier_file = calloc(strlen(VIRTUAL_NETWORK_IF_PATH_ROOT)
-                                          + strlen("bat0/carrier")
-                                          + 1, sizeof(char));
+   if (!interface_dependent_path(VIRTUAL_NETWORK_IF_PATH_ROOT,
+                                 interface_name,
+                                 "/operstate",
+                                 &bat_interface_operstate_file,
+                                 error)) {
+      return false;
+   }
 
-      if(!bat_interface_operstate_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-      if(!bat_interface_carrier_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_operstate_file, VIRTUAL_NETWORK_IF_PATH_ROOT);
-      strcat(bat_interface_operstate_file, "bat0/operstate");
-      strcat(bat_interface_carrier_file, VIRTUAL_NETWORK_IF_PATH_ROOT);
-      strcat(bat_interface_carrier_file, "bat0/carrier");
-
-   } else {
-      bat_interface_operstate_file = calloc(strlen(VIRTUAL_NETWORK_IF_PATH_ROOT)
-                                            + strlen(interface_name)
-                                            + strlen("/operstate")
-                                            + 1, sizeof(char));
-      bat_interface_carrier_file = calloc(strlen(VIRTUAL_NETWORK_IF_PATH_ROOT)
-                                          + strlen(interface_name)
-                                          + strlen("/carrier")
-                                          + 1, sizeof(char));
-
-      if(!bat_interface_operstate_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-      if(!bat_interface_carrier_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_operstate_file, VIRTUAL_NETWORK_IF_PATH_ROOT);
-      strcat(bat_interface_operstate_file, interface_name);
-      strcat(bat_interface_operstate_file, "/operstate");
-      strcat(bat_interface_carrier_file, VIRTUAL_NETWORK_IF_PATH_ROOT);
-      strcat(bat_interface_carrier_file, interface_name);
-      strcat(bat_interface_carrier_file, "/carrier");
+   if (!interface_dependent_path(VIRTUAL_NETWORK_IF_PATH_ROOT,
+                                 interface_name,
+                                 "/carrier",
+                                 &bat_interface_carrier_file,
+                                 error)) {
+      return false;
    }
 
    FILE *fp;
@@ -385,36 +407,13 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
 
    char *bat_interface_originators_file;
 
-   if (!interface_name) {
-      bat_interface_originators_file = calloc(
-                                    strlen(BATMAN_ADV_DEBUGFS_DIR)
-                                    + strlen("bat0/originators") + 1,
-                                    sizeof(char));
-
-      if(!bat_interface_originators_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_originators_file, BATMAN_ADV_DEBUGFS_DIR);
-      strcat(bat_interface_originators_file, "bat0/originators");
-   } else {
-      bat_interface_originators_file =
-                                  calloc(strlen(BATMAN_ADV_DEBUGFS_DIR)
-                                  + strlen(interface_name)
-                                  + strlen("/originators")
-                                  + 1, sizeof(char));
-
-      if(!bat_interface_originators_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_originators_file, BATMAN_ADV_DEBUGFS_DIR);
-      strcat(bat_interface_originators_file, interface_name);
-      strcat(bat_interface_originators_file, "/originators");
+   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
+                                 interface_name,
+                                 "/originators",
+                                 &bat_interface_originators_file,
+                                 error)) {
+      return false;
    }
-
 
    FILE *fp;
    char *line = NULL;
@@ -459,35 +458,12 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
    ///       and not assume /sys/kernel/debug.
    char *bat_interface_originators_file;
 
-   if (!interface_name) {
-      bat_interface_originators_file = calloc(
-                                    strlen(BATMAN_ADV_DEBUGFS_DIR)
-                                    + strlen("bat0/originators") + 1,
-                                    sizeof(char));
-
-      if(!bat_interface_originators_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_originators_file, BATMAN_ADV_DEBUGFS_DIR);
-      strcat(bat_interface_originators_file, "bat0/originators");
-
-   } else {
-      bat_interface_originators_file =
-                                  calloc(strlen(BATMAN_ADV_DEBUGFS_DIR)
-                                  + strlen(interface_name)
-                                  + strlen("/originators")
-                                  + 1, sizeof(char));
-
-      if(!bat_interface_originators_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_originators_file, BATMAN_ADV_DEBUGFS_DIR);
-      strcat(bat_interface_originators_file, interface_name);
-      strcat(bat_interface_originators_file, "/originators");
+   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
+                                 interface_name,
+                                 "/originators",
+                                 &bat_interface_originators_file,
+                                 error)) {
+      return false;
    }
 
    FILE *fp;
@@ -555,35 +531,12 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
    //        and not assume /sys/kernel/debug.
    char *bat_interface_originators_file;
 
-   if (!interface_name) {
-      bat_interface_originators_file = calloc(
-                                    strlen(BATMAN_ADV_DEBUGFS_DIR)
-                                    + strlen("bat0/originators") + 1,
-                                    sizeof(char));
-
-      if(!bat_interface_originators_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_originators_file, BATMAN_ADV_DEBUGFS_DIR);
-      strcat(bat_interface_originators_file, "bat0/originators");
-
-   } else {
-      bat_interface_originators_file =
-                                  calloc(strlen(BATMAN_ADV_DEBUGFS_DIR)
-                                  + strlen(interface_name)
-                                  + strlen("/originators")
-                                  + 1, sizeof(char));
-
-      if(!bat_interface_originators_file) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_originators_file, BATMAN_ADV_DEBUGFS_DIR);
-      strcat(bat_interface_originators_file, interface_name);
-      strcat(bat_interface_originators_file, "/originators");
+   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
+                                 interface_name,
+                                 "/originators",
+                                 &bat_interface_originators_file,
+                                 error)) {
+      return false;
    }
 
    FILE *fp;
