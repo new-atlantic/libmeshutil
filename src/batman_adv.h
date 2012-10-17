@@ -47,7 +47,7 @@ struct mu_bat_mesh_node {
  * @brief Test whether the batman_adv kernel module is available on the
  *        current kernel.
  *
- * @param  *error See documetation for *error.
+ * @param  *error See documentation for *error.
  *
  * @retval  true  The module is available.
  * @retval  false The module is not available. Also returned if an error
@@ -58,7 +58,7 @@ bool mu_batman_adv_kmod_available(int *error);
 /**
  * @brief Test whether the batman_adv kernel module is loaded.
  *
- * @param  *error See documetation for *error.
+ * @param  *error See documentation for *error.
  *
  * @retval  true  The module is loaded.
  * @retval  false The module is not loaded. Also returned if an error
@@ -69,7 +69,7 @@ bool mu_batman_adv_kmod_loaded(int *error);
 /**
  * @brief Get the kernel module version.
  *
- * @param  *error See documetation for *error.
+ * @param  *error See documentation for *error.
  *
  * @return Pointer to kernel module version string. The pointer has to be
  * free()'d by the caller.
@@ -80,7 +80,7 @@ char *mu_batman_adv_kmod_version(int *error);
 /**
  * @brief Check whether a bat interface is available.
  *
- * @param *error See documetation for *error.
+ * @param *error See documentation for *error.
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  *
@@ -93,7 +93,7 @@ bool mu_batman_adv_if_available(char *interface_name, int *error);
 /**
  * @brief Check whether a bat interface is up.
  *
- * @param *error See documetation for *error.
+ * @param *error See documentation for *error.
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  *
@@ -106,7 +106,7 @@ bool mu_batman_adv_if_up(char *interface_name, int *error);
 /**
  * @brief Get the MAC address of the bat interface.
  *
- * @param *error See documetation for *error.
+ * @param *error See documentation for *error.
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  *
@@ -119,7 +119,7 @@ char *mu_batman_adv_if_hwaddr(char *interface_name, int *error);
 /**
  * @brief Get the number of nodes in the mesh.
  *
- * @param *error See documetation for *error.
+ * @param *error See documentation for *error.
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  *
@@ -131,7 +131,7 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error);
 /**
  * @brief Get the addresses of the nodes in the mesh.
  *
- * @param *error See documetation for *error.
+ * @param *error See documentation for *error.
  * @param *n_nodes Pointer to an integer that will hold the number of nodes
  *                 addresses the mesh. Does not include self.
  * @param *interface_name Name of the interface to be looked for. If NULL is
@@ -149,7 +149,7 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
 /**
  * @brief Get the addresses of neighbouring nodes (next hops) in the mesh.
  *
- * @param *error See documetation for *error.
+ * @param *error See documentation for *error.
  * @param *n_nodes Pointer to an integer that will hold the number of next hop
  *                 addresses the mesh.
  * @param  potential If true, includes potential next hops (i.e. routes not
@@ -170,7 +170,7 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
 /**
  * @brief Checks whether a node is a next hop
  *
- * @param *error See documetation for *error.
+ * @param *error See documentation for *error.
  * @param  potential If true, includes potential next hops (i.e. routes not
  *                   used, but available).
  * @param *interface_name Name of the interface to be looked for. If NULL is
