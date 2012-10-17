@@ -199,6 +199,19 @@ char *mu_batman_adv_node_accessed_via_if(
                                          struct  mu_bat_mesh_node *node,
                                          int    *error);
 
+/**
+ * @brief Checks when a node was last seen.
+ *
+ * @param *error See documentation for *error.
+ * @param *node  The node that is to be checked.
+ * @param *interface_name Name of the interface to be looked for. If NULL is
+ *                        passed looks for "bat0", the default interface.
+ */
+unsigned int mu_batman_adv_node_last_seen(
+                                          char   *interface_name,
+                                          struct  mu_bat_mesh_node *node,
+                                          int    *error);
+
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
 
