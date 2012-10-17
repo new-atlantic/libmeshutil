@@ -618,8 +618,8 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
                   tmp_line = strchr(tmp_line, ')');
                   if(tmp_line) {
                      tmp_line = tmp_line + 1; // TODO: If we are at the last
-                                              //       address this lands us one
-                                              //       the last new line?!
+                                              //       address this lands us on
+                                              //       the last new-line char?!
                   }
                } else {
                   tmp_line = NULL;
