@@ -267,6 +267,7 @@ bool mu_badv_if_up(char *interface_name, int *error)
                                  "/carrier",
                                  &bat_interface_carrier_file,
                                  error)) {
+      free (bat_interface_operstate_file);
       return false;
    }
 
@@ -552,6 +553,7 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
 
    if (!fp) {
       MU_SET_ERROR(error, errno);
+      free (address_tmp);
       return NULL;
    }
 
