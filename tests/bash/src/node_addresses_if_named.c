@@ -8,7 +8,7 @@ int main (void) {
    int error  = 0;
    struct mu_bat_mesh_node *node;
 
-   node = mu_batman_adv_mesh_node_addresses("not_default", &number, &error);
+   node = mu_badv_mesh_node_addresses("not_default", &number, &error);
    if (!node) {
       if(!error) {
          printf("NO NODES");

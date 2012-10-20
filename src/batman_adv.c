@@ -123,7 +123,7 @@ bool interface_dependent_path(char *path_root,
  * - Checks for the availability of the file batman-adv.ko in the module
  *   directory of the currently loaded kernel.
  */
-bool mu_batman_adv_kmod_available(int *error)
+bool mu_badv_kmod_available(int *error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -166,7 +166,7 @@ bool mu_batman_adv_kmod_available(int *error)
 /* Implementation notes:
  * - Checks that the kernel module version file is available under sysfs.
  */
-bool mu_batman_adv_kmod_loaded(int *error)
+bool mu_badv_kmod_loaded(int *error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -185,7 +185,7 @@ bool mu_batman_adv_kmod_loaded(int *error)
 /* Implementation notes:
  * - Reads the kernel module version file from sysfs.
  */
-char *mu_batman_adv_kmod_version(int *error)
+char *mu_badv_kmod_version(int *error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -215,7 +215,7 @@ char *mu_batman_adv_kmod_version(int *error)
 /* Implementation notes:
  * - Checks that the bat interface directory is available under sysfs.
  */
-bool mu_batman_adv_if_available(char *interface_name, int *error)
+bool mu_badv_if_available(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -247,7 +247,7 @@ bool mu_batman_adv_if_available(char *interface_name, int *error)
  * - Reads the operstate and carrier files in the bat interface directory
  *   under sysfs.
  */
-bool mu_batman_adv_if_up(char *interface_name, int *error)
+bool mu_badv_if_up(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -335,7 +335,7 @@ bool mu_batman_adv_if_up(char *interface_name, int *error)
 /* Implementation notes:
  * - Reads the address file in the bat interface directory under sysfs.
  */
-char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
+char *mu_badv_if_hwaddr(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -398,7 +398,7 @@ char *mu_batman_adv_if_hwaddr(char *interface_name, int *error)
  * - Parses the originators table in the bat interface directory under sysfs.
  */
 /// TODO: Does the return value have to be unsigned?
-unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
+unsigned int mu_badv_mesh_n_nodes(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -447,7 +447,7 @@ unsigned int mu_batman_adv_mesh_n_nodes(char *interface_name, int *error)
 /* Implementation notes:
  * - Parses the originators table in the bat interface directory under sysfs.
  */
-struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
+struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
                                                            char *interface_name,
                                                            int  *n_nodes,
                                                            int  *error)
@@ -519,7 +519,7 @@ struct mu_bat_mesh_node *mu_batman_adv_mesh_node_addresses(
 /* Implementation notes:
  * - Parses the originators table in the bat interface directory under sysfs.
  */
-struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
+struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
                                                           char *interface_name,
                                                           bool  potential,
                                                           int  *n_nodes,
@@ -659,9 +659,9 @@ struct mu_bat_mesh_node *mu_batman_adv_next_hop_addresses(
 }
 
 /* Implementation notes:
- * - Compares a MAC address against mu_batman_adv_next_hop_addresses.
+ * - Compares a MAC address against mu_badv_next_hop_addresses.
  */
-bool mu_batman_adv_node_is_next_hop(
+bool mu_badv_node_is_next_hop(
                                     char *interface_name,
                                     struct mu_bat_mesh_node *node,
                                     bool potential,
@@ -680,7 +680,7 @@ bool mu_batman_adv_node_is_next_hop(
       node->mac_addr[17] = '\0';
    }
 
-   next_hop_node = mu_batman_adv_next_hop_addresses(interface_name,
+   next_hop_node = mu_badv_next_hop_addresses(interface_name,
                                                     potential,
                                                     NULL,
                                                     error);
@@ -702,4 +702,3 @@ bool mu_batman_adv_node_is_next_hop(
 }
 
 #endif                          /* __linux */
-

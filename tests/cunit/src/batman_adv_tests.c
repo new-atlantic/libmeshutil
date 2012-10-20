@@ -14,9 +14,9 @@
 
 void check_module_version (void) {
 
-     char *version = mu_batman_adv_kmod_version(NULL);
+     char *version = mu_badv_kmod_version(NULL);
 
-     if (mu_batman_adv_kmod_loaded(NULL)) {
+     if (mu_badv_kmod_loaded(NULL)) {
           CU_ASSERT_PTR_NOT_NULL(version);
           free(version);
      } else {
