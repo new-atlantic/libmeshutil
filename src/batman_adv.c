@@ -613,8 +613,9 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
             }
 
             do {
-               if(strchr(tmp_line, '(')) { // Check that there is still an
-                                           // address in tmp_line.
+               if(tmp_line && strchr(tmp_line, '(')) { // Check that there is
+                                                       // still a MAC address
+                                                       // in tmp_line.
                   memcpy(address_tmp, tmp_line + 1, sizeof(char) * 17);
                   address_tmp[17] = '\0';
                   tmp_line = strchr(tmp_line, ')');
