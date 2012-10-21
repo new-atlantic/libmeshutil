@@ -109,6 +109,7 @@ char* mu_linux_debugfs_mount_point(int *error)
          *strchr(tmp_line, ' ') = '\0'; // End the string. Next whitespace from
                                         // mount path.
 
+         #pragma message "May return string with escaped unicode sequences."
          /// TODO: Unescape unicode sequences in mount point (e.g. whitespace)
          mount_point = calloc (strlen (tmp_line) + 1, sizeof (char));
          strncpy (mount_point, tmp_line, strlen (tmp_line));
