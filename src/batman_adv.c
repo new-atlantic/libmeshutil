@@ -726,7 +726,7 @@ char *mu_badv_node_accessible_via_if(
                                  "/originators",
                                  &bat_interface_originators_file,
                                  error)) {
-      return false;
+      return NULL;
    }
 
    FILE *fp;
@@ -782,5 +782,78 @@ char *mu_badv_node_accessible_via_if(
    fclose (fp);
    return NULL;
 }
+
+double mu_badv_node_last_seen(
+                                     char             *interface_name,
+                              struct mu_bat_mesh_node *node,
+                                     int              *error)
+{
+   MU_SET_ERROR(error, 0);
+
+   if(!node) {
+      /// TODO: Set error to indicate that pointer was NULL?
+      return 0;
+   } else {
+      node->mac_addr[17] = '\0';
+   }
+
+   char *bat_interface_originators_file;
+
+   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
+                                 interface_name,
+                                 "/originators",
+                                 &bat_interface_originators_file,
+                                 error)) {
+      return 0;
+   }
+
+   FILE *fp;
+   char *line = NULL;
+   size_t len = 0;
+   ssize_t read;
+   double  last_seen;
+
+   fp = fopen (bat_interface_originators_file, "r");
+   free(bat_interface_originators_file);
+
+   if (!fp) {
+      MU_SET_ERROR(error, errno);
+      return 0;
+   }
+
+   char* tmp_line = NULL;
+
+   while ((read = getline(&line, &len, fp)) != -1) {
+      if (!strncmp(line, node->mac_addr, strlen(node->mac_addr))) {
+         tmp_line = strchr(line, ' ');
+         if(!tmp_line) {
+            MU_SET_ERROR(error, errno);
+            free (line);
+            fclose (fp);
+            return 0;
+         }
+
+         *strchr(tmp_line, 's') = '\0'; // End the string.;
+
+         tmp_line = strrchr(tmp_line, ' ') + 1; // Skip to last whitespace + 1
+                                                // before last seen value.
+
+         if (sscanf(tmp_line, "%lf", &last_seen) != 1) {
+            MU_SET_ERROR(error, errno);
+            last_seen = 0;
+         }
+
+         tmp_line = NULL;
+         free (line);
+         fclose (fp);
+         return last_seen;
+      }
+   }
+
+   free (line);
+   fclose (fp);
+   return 0;
+}
+
 
 #endif                          /* __linux */

@@ -210,10 +210,10 @@ char *mu_badv_node_accessible_via_if(
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  */
-unsigned int mu_badv_node_last_seen(
-                                           char             *interface_name,
-                                    struct mu_bat_mesh_node *node,
-                                           int              *error);
+double mu_badv_node_last_seen(
+                                     char             *interface_name,
+                              struct mu_bat_mesh_node *node,
+                                     int              *error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
