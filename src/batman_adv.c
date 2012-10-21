@@ -348,32 +348,12 @@ char *mu_badv_if_hwaddr(char *interface_name, int *error)
 
    char *bat_interface_address;
 
-   if (!interface_name) {
-      bat_interface_address = calloc(strlen(VIRTUAL_NETWORK_IF_PATH_ROOT)
-                                     + strlen("bat0/address") + 1,
-                                     sizeof(char));
-
-      if(!bat_interface_address) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_address, VIRTUAL_NETWORK_IF_PATH_ROOT);
-      strcat(bat_interface_address, "bat0/address");
-   } else {
-      bat_interface_address = calloc(strlen(VIRTUAL_NETWORK_IF_PATH_ROOT)
-                                     + strlen(interface_name)
-                                     + strlen("/address")
-                                     + 1, sizeof(char));
-
-      if(!bat_interface_address) {
-         MU_SET_ERROR(error, errno);
-         return false;
-      }
-
-      strcat(bat_interface_address, VIRTUAL_NETWORK_IF_PATH_ROOT);
-      strcat(bat_interface_address, interface_name);
-      strcat(bat_interface_address, "/address");
+   if (!interface_dependent_path(VIRTUAL_NETWORK_IF_PATH_ROOT,
+                                 interface_name,
+                                 "/address",
+                                 &bat_interface_address,
+                                 error)) {
+      return false;
    }
 
    FILE *fp;
