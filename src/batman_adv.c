@@ -50,13 +50,14 @@
 #define BATMAN_ADV_DEBUGFS_DIR "/sys/kernel/debug/batman_adv/"
 /// Originators file field header for interface names
 #define BATMAN_ADV_ORIGINATORS_IFNAME_HEADER "outgoingIF"
+
 /*** STATIC FUNCTIONS ***/
 
-bool interface_dependent_path(char *path_root,
-                              char *interface_name,
-                              char *suffix,
-                              char **path_string,
-                              int  *error)
+static bool interface_dependent_path(char  *path_root,
+                                     char  *interface_name,
+                                     char  *suffix,
+                                     char **path_string,
+                                     int   *error)
 {
    if (!path_root) {
       return false;
@@ -64,17 +65,18 @@ bool interface_dependent_path(char *path_root,
 
    if (!interface_name) {
       if(!suffix) {
-         *path_string = calloc(strlen(path_root)
+         *path_string = calloc(strlen(path_root) + 1
                               + strlen("bat0") + 1, sizeof(char));
          if(!*path_string) {
             MU_SET_ERROR(error, errno);
             return false;
          }
          strcat(*path_string, path_root);
+         strcat(*path_string, "/");
          strcat(*path_string, "bat0");
          return true;
       } else {
-         *path_string = calloc(strlen(path_root)
+         *path_string = calloc(strlen(path_root)+ 1
                               + strlen("bat0")
                               + strlen(suffix) + 1, sizeof(char));
          if(!*path_string) {
@@ -82,6 +84,7 @@ bool interface_dependent_path(char *path_root,
             return false;
          }
          strcat(*path_string, path_root);
+         strcat(*path_string, "/");
          strcat(*path_string, "bat0");
          strcat(*path_string, suffix);
          return true;
@@ -89,7 +92,7 @@ bool interface_dependent_path(char *path_root,
 
    } else {
       if(!suffix) {
-         *path_string = calloc(strlen(path_root)
+         *path_string = calloc(strlen(path_root) + 1
                               + strlen(interface_name) + 1,
                               sizeof(char));
          if(!*path_string) {
@@ -98,10 +101,11 @@ bool interface_dependent_path(char *path_root,
          }
 
          strcat(*path_string, path_root);
+         strcat(*path_string, "/");
          strcat(*path_string, interface_name);
          return true;
       } else {
-         *path_string = calloc(strlen(path_root)
+         *path_string = calloc(strlen(path_root) + 1
                               + strlen(interface_name)
                               + strlen(suffix) + 1,
                               sizeof(char));
@@ -111,6 +115,7 @@ bool interface_dependent_path(char *path_root,
          }
 
          strcat(*path_string, path_root);
+         strcat(*path_string, "/");
          strcat(*path_string, interface_name);
          strcat(*path_string, suffix);
          return true;
