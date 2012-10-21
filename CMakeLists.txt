@@ -6,8 +6,8 @@ set (meshutil_PATCH_VERSION 1)
 set (meshutil_VERSION
    "${meshutil_VERSION_MAJOR}.${meshutil_VERSION_MINOR}.${meshutil_PATCH_VERSION}")
 
-add_library (meshutil SHARED src/batman_adv.c)
-add_library (meshutil_static STATIC src/batman_adv.c)
+add_library (meshutil SHARED src/batman_adv.c src/linux.c)
+add_library (meshutil_static STATIC src/batman_adv.c src/linux.c)
 
 set (HARDENING_FLAGS "-Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -fstack-protector --param ssp-buffer-size=4 -Wl,-z,now -Wl,-z,relro")
 

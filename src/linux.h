@@ -28,9 +28,29 @@
 
 #ifdef __linux
 
-bool mu_linux_debugfs_mounted(void);
+#include <stdbool.h>
 
-char* mu_linux_debugfs_mount_point(void);
+/**
+ * @brief Check if the Linux debug filesystem is mounted.
+ *
+ * @param *error See documentation for *error.
+ *
+ * @retval true  debugfs is mounted
+ * @retval false debugfs is not mounted and/or an error occurred.
+ */
+bool mu_linux_debugfs_mounted(int *error);
+
+/**
+ * @brief Get the path to the mount point of the Linux debug filesystem.
+ *
+ * If debugfs is mounted at multiple paths, returns the first one.
+ *
+ * @param *error See documentation for *error.
+ *
+ * @return Pointer to string containing the mount path.
+ * @retval NULL debugfs not mounted or other error occurred.
+ */
+char *mu_linux_debugfs_mount_point(int *error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
