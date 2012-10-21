@@ -5,6 +5,7 @@
 Before a stable release
 -----------------------
 
+* Check return values of fclose()
 * Support for multiple versions
 * Testing of multiple versions
 * Implementation notes for all functions
