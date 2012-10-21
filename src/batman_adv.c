@@ -48,7 +48,8 @@
 /// Path to the batman_adv directory under the Linux debug filesystem.
 /// TODO: Only works when debugfs is mounted to the default location.
 #define BATMAN_ADV_DEBUGFS_DIR "/sys/kernel/debug/batman_adv/"
-
+/// Originators file field header for interface names
+#define BATMAN_ADV_ORIGINATORS_IFNAME_HEADER "outgoingIF"
 /*** STATIC FUNCTIONS ***/
 
 bool interface_dependent_path(char *path_root,
@@ -702,6 +703,84 @@ bool mu_badv_node_is_next_hop(
 
       return node_status;
    }
+}
+
+char *mu_badv_node_accessible_via_if(
+                                          char             *interface_name,
+                                   struct mu_bat_mesh_node *node,
+                                          int              *error)
+{
+   MU_SET_ERROR(error, 0);
+
+   if(!node) {
+      /// TODO: Set error to indicate that pointer was NULL?
+      return NULL;
+   } else {
+      node->mac_addr[17] = '\0';
+   }
+
+   char *bat_interface_originators_file;
+
+   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
+                                 interface_name,
+                                 "/originators",
+                                 &bat_interface_originators_file,
+                                 error)) {
+      return false;
+   }
+
+   FILE *fp;
+   char *line = NULL;
+   size_t len = 0;
+   ssize_t read;
+
+   char *iface = NULL;
+
+   fp = fopen (bat_interface_originators_file, "r");
+   free(bat_interface_originators_file);
+
+   if (!fp) {
+      MU_SET_ERROR(error, errno);
+      return 0;
+   }
+
+   char* tmp_line = NULL;
+
+   while ((read = getline(&line, &len, fp)) != -1) {
+      if (!strncmp(line, node->mac_addr, strlen(node->mac_addr))) {
+         tmp_line = strchr(line, '[');
+         if(!tmp_line) {
+            MU_SET_ERROR(error, errno);
+            free (line);
+            fclose (fp);
+            return NULL;
+         }
+
+         tmp_line = tmp_line + 1;
+
+         *strchr(tmp_line, ']') = '\0'; // End the string.
+
+         if (tmp_line[0] == ' ') { // If ifname preceded by space skip it!
+            tmp_line = strrchr(tmp_line, ' ');
+         }
+
+         iface = calloc((
+                  strnlen(tmp_line,
+                          strlen(BATMAN_ADV_ORIGINATORS_IFNAME_HEADER)) + 1),
+                  sizeof(char));
+         strncpy(iface, tmp_line,
+                    strnlen(tmp_line,
+                    strlen(BATMAN_ADV_ORIGINATORS_IFNAME_HEADER)));
+         tmp_line = NULL;
+         free (line);
+         fclose (fp);
+         return iface;
+      }
+   }
+
+   free (line);
+   fclose (fp);
+   return NULL;
 }
 
 #endif                          /* __linux */
