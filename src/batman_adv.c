@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "meshutil.h"
+#include "linux.h"
 #include "batman_adv.h"
 
 /// String in a batman_adv interface originator table indicating that no
@@ -45,9 +46,6 @@
 #define BATMAN_ADV_KMOD_VERSION_PATH "/sys/module/batman_adv/version"
 /// Path to the sys filesystem directory containing virtual network devices.
 #define VIRTUAL_NETWORK_IF_PATH_ROOT "/sys/devices/virtual/net/"
-/// Path to the batman_adv directory under the Linux debug filesystem.
-/// TODO: Only works when debugfs is mounted to the default location.
-#define BATMAN_ADV_DEBUGFS_DIR "/sys/kernel/debug/batman_adv/"
 /// Originators file field header for interface names
 #define BATMAN_ADV_ORIGINATORS_IFNAME_HEADER "outgoingIF"
 
@@ -122,6 +120,41 @@ static bool interface_dependent_path(char  *path_root,
       }
    }
 }
+
+/*** FUNCTION REPLACEMENT MACROS ***/
+
+#define BATMAN_ADV_ORIGINATORS_FILE                               \
+   char *debugfs_root = mu_linux_debugfs_mount_point(NULL);       \
+   char *batman_debugfs_dir = NULL;                               \
+                                                                  \
+   if (!debugfs_root) {                                           \
+      MU_SET_ERROR(error, errno);                                 \
+      return 0;                                                   \
+   }                                                              \
+                                                                  \
+   batman_debugfs_dir = calloc (strlen (debugfs_root)             \
+                                + strlen("/batman_adv/") + 1,     \
+                                sizeof (char));                   \
+   if (!batman_debugfs_dir) {                                     \
+      MU_SET_ERROR(error, errno);                                 \
+      free (debugfs_root);                                        \
+      return 0;                                                   \
+   }                                                              \
+                                                                  \
+   strcat (batman_debugfs_dir, debugfs_root);                     \
+   strcat (batman_debugfs_dir, "/batman_adv/");                   \
+   free (debugfs_root);                                           \
+                                                                  \
+   if (!interface_dependent_path(batman_debugfs_dir,              \
+                                 interface_name,                  \
+                                 "/originators",                  \
+                                 &bat_interface_originators_file, \
+                                 error)) {                        \
+      free (batman_debugfs_dir);                                  \
+      return 0;                                                   \
+   }                                                              \
+                                                                  \
+   free (batman_debugfs_dir);                                     \
 
 /*** API FUNCTIONS ***/
 
@@ -388,19 +421,9 @@ char *mu_badv_if_hwaddr(char *interface_name, int *error)
 unsigned int mu_badv_mesh_n_nodes(char *interface_name, int *error)
 {
    MU_SET_ERROR(error, 0);
-
-   ///TODO: function should dynamically determine the mount path of debugfs
-   ///      and not assume /sys/kernel/debug.
-
    char *bat_interface_originators_file;
 
-   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
-                                 interface_name,
-                                 "/originators",
-                                 &bat_interface_originators_file,
-                                 error)) {
-      return false;
-   }
+   BATMAN_ADV_ORIGINATORS_FILE;
 
    FILE *fp;
    char *line = NULL;
@@ -441,17 +464,9 @@ struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
 {
    MU_SET_ERROR(error, 0);
 
-   /// TODO: function should dynamically determine the mount path of debugfs
-   ///       and not assume /sys/kernel/debug.
    char *bat_interface_originators_file;
 
-   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
-                                 interface_name,
-                                 "/originators",
-                                 &bat_interface_originators_file,
-                                 error)) {
-      return false;
-   }
+   BATMAN_ADV_ORIGINATORS_FILE;
 
    FILE *fp;
    char *line = NULL;
@@ -514,17 +529,9 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
 {
    MU_SET_ERROR(error, 0);
 
-   /// TODO: function should dynamically determine the mount path of debugfs
-   //        and not assume /sys/kernel/debug.
    char *bat_interface_originators_file;
 
-   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
-                                 interface_name,
-                                 "/originators",
-                                 &bat_interface_originators_file,
-                                 error)) {
-      return false;
-   }
+   BATMAN_ADV_ORIGINATORS_FILE;
 
    FILE *fp;
    char *line = NULL;
@@ -706,13 +713,7 @@ char *mu_badv_node_accessible_via_if(
 
    char *bat_interface_originators_file;
 
-   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
-                                 interface_name,
-                                 "/originators",
-                                 &bat_interface_originators_file,
-                                 error)) {
-      return NULL;
-   }
+   BATMAN_ADV_ORIGINATORS_FILE;
 
    FILE *fp;
    char *line = NULL;
@@ -784,13 +785,7 @@ double mu_badv_node_last_seen(
 
    char *bat_interface_originators_file;
 
-   if (!interface_dependent_path(BATMAN_ADV_DEBUGFS_DIR,
-                                 interface_name,
-                                 "/originators",
-                                 &bat_interface_originators_file,
-                                 error)) {
-      return 0;
-   }
+   BATMAN_ADV_ORIGINATORS_FILE;
 
    FILE *fp;
    char *line = NULL;
