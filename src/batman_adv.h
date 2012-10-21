@@ -22,6 +22,7 @@
 /* Abbreviations used:
  *
  *     batman_adv:  B.A.T.M.A.N. advanced
+ *     badv:        B.A.T.M.A.N. advanced
  *     hwaddr:      MAC address of network interface
  *     if:          network interface
  *     kmod:        kernel module
