@@ -97,7 +97,7 @@ __attribute__ ((visibility("default")))
  */
 bool
 __attribute__ ((visibility("default")))
-mu_badv_if_available(char *interface_name, int *const error);
+mu_badv_if_available(const char *const interface_name, int *const error);
 
 /**
  * @brief Check whether a bat interface is up.
@@ -112,7 +112,7 @@ mu_badv_if_available(char *interface_name, int *const error);
  */
 bool
 __attribute__ ((visibility("default")))
-mu_badv_if_up(char *interface_name, int *const error);
+mu_badv_if_up(const char *const interface_name, int *const error);
 
 /**
  * @brief Get the MAC address of the bat interface.
@@ -127,7 +127,7 @@ mu_badv_if_up(char *interface_name, int *const error);
  */
 char
 __attribute__ ((visibility("default")))
-*mu_badv_if_hwaddr(char *interface_name, int *const error);
+*mu_badv_if_hwaddr(const char *const interface_name, int *const error);
 
 /**
  * @brief Get the number of nodes in the mesh.
@@ -141,7 +141,7 @@ __attribute__ ((visibility("default")))
  */
 unsigned int
 __attribute__ ((visibility("default")))
-mu_badv_mesh_n_nodes(char *interface_name, int *const error);
+mu_badv_mesh_n_nodes(const char *const interface_name, int *const error);
 
 /**
  * @brief Get the addresses of the nodes in the mesh.
@@ -158,7 +158,9 @@ mu_badv_mesh_n_nodes(char *interface_name, int *const error);
  */
 struct mu_bat_mesh_node 
 __attribute__ ((visibility("default")))
-*mu_badv_mesh_node_addresses(char *interface_name, int  *n_nodes, int  *error);
+*mu_badv_mesh_node_addresses(const char *const interface_name,
+                                   int  *const n_nodes,
+                                   int  *const error);
 
 /**
  * @brief Get the addresses of neighbouring nodes (next hops) in the mesh.
@@ -177,10 +179,10 @@ __attribute__ ((visibility("default")))
  */
 struct mu_bat_mesh_node
 __attribute__ ((visibility("default")))
-*mu_badv_next_hop_addresses(char *interface_name, 
-                            bool  potential,
-                            int  *n_nodes,
-                            int  *error);
+*mu_badv_next_hop_addresses(const char *const interface_name, 
+                            const bool        potential,
+                                  int  *const n_nodes,
+                                  int  *const error);
 
 /**
  * @brief Checks whether a node is a next hop
@@ -197,10 +199,10 @@ __attribute__ ((visibility("default")))
  */
 bool
 __attribute__ ((visibility("default")))
-mu_badv_node_is_next_hop(       char             *interface_name,
-                         struct mu_bat_mesh_node *node,
-                                bool              potential,
-                                int              *error);
+mu_badv_node_is_next_hop(const        char             *const interface_name,
+                               struct mu_bat_mesh_node *const node,
+                         const        bool                    potential,
+                                      int              *const error);
 
 /**
  * @brief Checks via which network interface a node is accessible.
@@ -215,9 +217,11 @@ mu_badv_node_is_next_hop(       char             *interface_name,
  */
 char
 __attribute__ ((visibility("default")))
-*mu_badv_node_accessible_via_if(       char             *interface_name,
-                                struct mu_bat_mesh_node *node,
-                                       int              *error);
+*mu_badv_node_accessible_via_if(
+   const        char             *const interface_name,
+         struct mu_bat_mesh_node *const node,
+                int              *const error
+   );
 
 /**
  * @brief Checks when a node was last seen.
@@ -229,10 +233,9 @@ __attribute__ ((visibility("default")))
  */
 double
 __attribute__ ((visibility("default")))
-mu_badv_node_last_seen(       char             *interface_name,
-                       struct mu_bat_mesh_node *node,
-                              int              *error);
+mu_badv_node_last_seen(const        char             *const interface_name,
+                             struct mu_bat_mesh_node *const node,
+                                    int              *const error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */
-

@@ -51,11 +51,11 @@
 
 /*** STATIC FUNCTIONS ***/
 
-static bool interface_dependent_path(char  *path_root,
-                                     char  *interface_name,
-                                     char  *suffix,
-                                     char **path_string,
-                                     int   *error)
+static bool interface_dependent_path(const char  *const path_root,
+                                     const char  *const interface_name,
+                                     const char  *const suffix,
+                                           char **      path_string,
+                                           int   *const error)
 {
    if (!path_root) {
       return false;
@@ -242,7 +242,7 @@ char *mu_badv_kmod_version(int *const error)
 
    if ((read = getline(&line, &len, fp)) != -1) {
       fclose(fp);
-      line[strlen(line)-1] = '\0'; //Remove new-line character.
+      line[strlen(line)-1] = '\0'; // Remove new-line character.
       return line;
    } else {
       MU_SET_ERROR(error, errno);
@@ -254,11 +254,11 @@ char *mu_badv_kmod_version(int *const error)
 /* Implementation notes:
  * - Checks that the bat interface directory is available under sysfs.
  */
-bool mu_badv_if_available(char *interface_name, int *const error)
+bool mu_badv_if_available(const char *const interface_name, int *const error)
 {
    MU_SET_ERROR(error, 0);
 
-   char *bat_interface_path;
+   char *bat_interface_path = NULL;
 
    if (!interface_dependent_path(VIRTUAL_NETWORK_IF_PATH_ROOT,
                                  interface_name,
@@ -286,7 +286,7 @@ bool mu_badv_if_available(char *interface_name, int *const error)
  * - Reads the operstate and carrier files in the bat interface directory
  *   under sysfs.
  */
-bool mu_badv_if_up(char *interface_name, int *const error)
+bool mu_badv_if_up(const char *const interface_name, int *const error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -375,7 +375,7 @@ bool mu_badv_if_up(char *interface_name, int *const error)
 /* Implementation notes:
  * - Reads the address file in the bat interface directory under sysfs.
  */
-char *mu_badv_if_hwaddr(char *interface_name, int *const error)
+char *mu_badv_if_hwaddr(const char *const interface_name, int *const error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -418,7 +418,8 @@ char *mu_badv_if_hwaddr(char *interface_name, int *const error)
  * - Parses the originators table in the bat interface directory under sysfs.
  */
 /// TODO: Does the return value have to be unsigned?
-unsigned int mu_badv_mesh_n_nodes(char *interface_name, int *const error)
+unsigned int mu_badv_mesh_n_nodes(const char *const interface_name,
+                                        int  *const error)
 {
    MU_SET_ERROR(error, 0);
    char *bat_interface_originators_file;
@@ -458,9 +459,9 @@ unsigned int mu_badv_mesh_n_nodes(char *interface_name, int *const error)
  * - Parses the originators table in the bat interface directory under sysfs.
  */
 struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
-                                                           char *interface_name,
-                                                           int  *n_nodes,
-                                                           int  *error)
+   const char *const interface_name,
+         int  *const n_nodes,
+         int  *const error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -522,10 +523,10 @@ struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
  * - Parses the originators table in the bat interface directory under sysfs.
  */
 struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
-                                                          char *interface_name,
-                                                          bool  potential,
-                                                          int  *n_nodes,
-                                                          int  *error)
+   const char *const interface_name,
+   const bool        potential,
+         int  *const n_nodes,
+         int  *const error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -658,10 +659,10 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
  * - Compares a MAC address against mu_badv_next_hop_addresses.
  */
 bool mu_badv_node_is_next_hop(
-                                    char *interface_name,
-                                    struct mu_bat_mesh_node *node,
-                                    bool potential,
-                                    int  *error)
+   const        char             *const interface_name,
+         struct mu_bat_mesh_node *const node,
+   const        bool                    potential,
+                int              *const error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -698,9 +699,9 @@ bool mu_badv_node_is_next_hop(
 }
 
 char *mu_badv_node_accessible_via_if(
-                                          char             *interface_name,
-                                   struct mu_bat_mesh_node *node,
-                                          int              *error)
+   const        char             *const interface_name,
+         struct mu_bat_mesh_node *const node,
+                int              *const error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -770,9 +771,9 @@ char *mu_badv_node_accessible_via_if(
 }
 
 double mu_badv_node_last_seen(
-                                     char             *interface_name,
-                              struct mu_bat_mesh_node *node,
-                                     int              *error)
+   const        char             *const interface_name,
+         struct mu_bat_mesh_node *const node,
+                int              *const error)
 {
    MU_SET_ERROR(error, 0);
 
