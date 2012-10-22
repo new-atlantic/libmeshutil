@@ -40,7 +40,7 @@
  */
 bool
 __attribute__ ((visibility("hidden")))
-mu_linux_debugfs_mounted(int *error);
+mu_linux_debugfs_mounted(int *const error);
 
 /**
  * @brief Get the path to the mount point of the Linux debug filesystem.
@@ -54,7 +54,7 @@ mu_linux_debugfs_mounted(int *error);
  */
 char
 __attribute__ ((visibility("hidden")))
-*mu_linux_debugfs_mount_point(int *error);
+*mu_linux_debugfs_mount_point(int *const error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */

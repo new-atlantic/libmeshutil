@@ -56,7 +56,7 @@ struct mu_bat_mesh_node {
  */
 bool
 __attribute__ ((visibility("default")))
-mu_badv_kmod_available(int *error);
+mu_badv_kmod_available(int *const error);
 
 /**
  * @brief Test whether the batman_adv kernel module is loaded.
@@ -69,7 +69,7 @@ mu_badv_kmod_available(int *error);
  */
 bool
 __attribute__ ((visibility("default")))
-mu_badv_kmod_loaded(int *error);
+mu_badv_kmod_loaded(int *const error);
 
 /**
  * @brief Get the kernel module version.
@@ -82,7 +82,7 @@ mu_badv_kmod_loaded(int *error);
  */
 char
 __attribute__ ((visibility("default")))
-*mu_badv_kmod_version(int *error);
+*mu_badv_kmod_version(int *const error);
 
 /**
  * @brief Check whether a bat interface is available.
@@ -97,7 +97,7 @@ __attribute__ ((visibility("default")))
  */
 bool
 __attribute__ ((visibility("default")))
-mu_badv_if_available(char *interface_name, int *error);
+mu_badv_if_available(char *interface_name, int *const error);
 
 /**
  * @brief Check whether a bat interface is up.
@@ -112,7 +112,7 @@ mu_badv_if_available(char *interface_name, int *error);
  */
 bool
 __attribute__ ((visibility("default")))
-mu_badv_if_up(char *interface_name, int *error);
+mu_badv_if_up(char *interface_name, int *const error);
 
 /**
  * @brief Get the MAC address of the bat interface.
@@ -127,7 +127,7 @@ mu_badv_if_up(char *interface_name, int *error);
  */
 char
 __attribute__ ((visibility("default")))
-*mu_badv_if_hwaddr(char *interface_name, int *error);
+*mu_badv_if_hwaddr(char *interface_name, int *const error);
 
 /**
  * @brief Get the number of nodes in the mesh.
@@ -141,7 +141,7 @@ __attribute__ ((visibility("default")))
  */
 unsigned int
 __attribute__ ((visibility("default")))
-mu_badv_mesh_n_nodes(char *interface_name, int *error);
+mu_badv_mesh_n_nodes(char *interface_name, int *const error);
 
 /**
  * @brief Get the addresses of the nodes in the mesh.

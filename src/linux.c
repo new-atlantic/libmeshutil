@@ -36,7 +36,7 @@
 /* Implementation notes:
  * - Parses /proc/mounts.
  */
-bool mu_linux_debugfs_mounted(int *error)
+bool mu_linux_debugfs_mounted(int *const error)
 {
    MU_SET_ERROR(error, 0);
 
@@ -72,7 +72,7 @@ bool mu_linux_debugfs_mounted(int *error)
  * - Parses /proc/mounts.
  */
 char
-*mu_linux_debugfs_mount_point(int *error)
+*mu_linux_debugfs_mount_point(int *const error)
 {
    MU_SET_ERROR(error, 0);
 
