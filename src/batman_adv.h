@@ -54,7 +54,9 @@ struct mu_bat_mesh_node {
  * @retval  false The module is not available. Also returned if an error
  *                occurred.
  */
-bool mu_badv_kmod_available(int *error);
+bool
+__attribute__ ((visibility("default")))
+mu_badv_kmod_available(int *error);
 
 /**
  * @brief Test whether the batman_adv kernel module is loaded.
@@ -65,7 +67,9 @@ bool mu_badv_kmod_available(int *error);
  * @retval  false The module is not loaded. Also returned if an error
  *                occurred.
  */
-bool mu_badv_kmod_loaded(int *error);
+bool
+__attribute__ ((visibility("default")))
+mu_badv_kmod_loaded(int *error);
 
 /**
  * @brief Get the kernel module version.
@@ -76,7 +80,9 @@ bool mu_badv_kmod_loaded(int *error);
  * free()'d by the caller.
  * @retval NULL Returned on failure.
  */
-char *mu_badv_kmod_version(int *error);
+char
+__attribute__ ((visibility("default")))
+*mu_badv_kmod_version(int *error);
 
 /**
  * @brief Check whether a bat interface is available.
@@ -89,7 +95,9 @@ char *mu_badv_kmod_version(int *error);
  * @retval false The interface is not available. Also returned if an error
  *               ocurred.
  */
-bool mu_badv_if_available(char *interface_name, int *error);
+bool
+__attribute__ ((visibility("default")))
+mu_badv_if_available(char *interface_name, int *error);
 
 /**
  * @brief Check whether a bat interface is up.
@@ -102,7 +110,9 @@ bool mu_badv_if_available(char *interface_name, int *error);
  * @retval false The interface is not up. Also returned if an error
  *               ocurred.
  */
-bool mu_badv_if_up(char *interface_name, int *error);
+bool
+__attribute__ ((visibility("default")))
+mu_badv_if_up(char *interface_name, int *error);
 
 /**
  * @brief Get the MAC address of the bat interface.
@@ -115,7 +125,9 @@ bool mu_badv_if_up(char *interface_name, int *error);
  * free()'d by the caller.
  * @retval NULL Returned on failure.
  */
-char *mu_badv_if_hwaddr(char *interface_name, int *error);
+char
+__attribute__ ((visibility("default")))
+*mu_badv_if_hwaddr(char *interface_name, int *error);
 
 /**
  * @brief Get the number of nodes in the mesh.
@@ -127,7 +139,9 @@ char *mu_badv_if_hwaddr(char *interface_name, int *error);
  * @return Number of nodes in the mesh. Count includes self.
  * @retval 0 Zero returned on error.
  */
-unsigned int mu_badv_mesh_n_nodes(char *interface_name, int *error);
+unsigned int
+__attribute__ ((visibility("default")))
+mu_badv_mesh_n_nodes(char *interface_name, int *error);
 
 /**
  * @brief Get the addresses of the nodes in the mesh.
@@ -142,10 +156,9 @@ unsigned int mu_badv_mesh_n_nodes(char *interface_name, int *error);
  *         list have to be free()'d by the caller.
  * @retval NULL Returned on failure or when no nodes available.
  */
-struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
-                                                           char *interface_name,
-                                                           int  *n_nodes,
-                                                           int  *error);
+struct mu_bat_mesh_node 
+__attribute__ ((visibility("default")))
+*mu_badv_mesh_node_addresses(char *interface_name, int  *n_nodes, int  *error);
 
 /**
  * @brief Get the addresses of neighbouring nodes (next hops) in the mesh.
@@ -162,11 +175,12 @@ struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
  *         list have to be free()'d by the caller.
  * @retval NULL Returned on failure or when no nodes available.
  */
-struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
-                                                          char *interface_name,
-                                                          bool  potential,
-                                                          int  *n_nodes,
-                                                          int  *error);
+struct mu_bat_mesh_node
+__attribute__ ((visibility("default")))
+*mu_badv_next_hop_addresses(char *interface_name, 
+                            bool  potential,
+                            int  *n_nodes,
+                            int  *error);
 
 /**
  * @brief Checks whether a node is a next hop
@@ -181,11 +195,12 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
  * @retval false Node is not a next hop. Also returned on error.
  *
  */
-bool mu_badv_node_is_next_hop(
-                                    char *interface_name,
-                                    struct mu_bat_mesh_node *node,
-                                    bool potential,
-                                    int  *error);
+bool
+__attribute__ ((visibility("default")))
+mu_badv_node_is_next_hop(       char             *interface_name,
+                         struct mu_bat_mesh_node *node,
+                                bool              potential,
+                                int              *error);
 
 /**
  * @brief Checks via which network interface a node is accessible.
@@ -198,10 +213,11 @@ bool mu_badv_node_is_next_hop(
  * @return Pointer to string containing interface name.
  * @retval NULL An error occurred.
  */
-char *mu_badv_node_accessible_via_if(
-                                          char             *interface_name,
-                                   struct mu_bat_mesh_node *node,
-                                          int              *error);
+char
+__attribute__ ((visibility("default")))
+*mu_badv_node_accessible_via_if(       char             *interface_name,
+                                struct mu_bat_mesh_node *node,
+                                       int              *error);
 
 /**
  * @brief Checks when a node was last seen.
@@ -211,10 +227,11 @@ char *mu_badv_node_accessible_via_if(
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  */
-double mu_badv_node_last_seen(
-                                     char             *interface_name,
-                              struct mu_bat_mesh_node *node,
-                                     int              *error);
+double
+__attribute__ ((visibility("default")))
+mu_badv_node_last_seen(       char             *interface_name,
+                       struct mu_bat_mesh_node *node,
+                              int              *error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */

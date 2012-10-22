@@ -38,7 +38,9 @@
  * @retval true  debugfs is mounted
  * @retval false debugfs is not mounted and/or an error occurred.
  */
-bool mu_linux_debugfs_mounted(int *error);
+bool
+__attribute__ ((visibility("hidden")))
+mu_linux_debugfs_mounted(int *error);
 
 /**
  * @brief Get the path to the mount point of the Linux debug filesystem.
@@ -50,7 +52,9 @@ bool mu_linux_debugfs_mounted(int *error);
  * @return Pointer to string containing the mount path.
  * @retval NULL debugfs not mounted or other error occurred.
  */
-char *mu_linux_debugfs_mount_point(int *error);
+char
+__attribute__ ((visibility("hidden")))
+*mu_linux_debugfs_mount_point(int *error);
 
 #endif                          /* __linux */
 #endif                          /* MESHUTIL_BATMAN_ADV_H */

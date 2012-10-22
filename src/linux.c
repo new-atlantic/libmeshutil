@@ -71,7 +71,8 @@ bool mu_linux_debugfs_mounted(int *error)
 /* Implementation notes:
  * - Parses /proc/mounts.
  */
-char* mu_linux_debugfs_mount_point(int *error)
+char
+*mu_linux_debugfs_mount_point(int *error)
 {
    MU_SET_ERROR(error, 0);
 
