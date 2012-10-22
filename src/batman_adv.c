@@ -660,7 +660,7 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
  */
 bool mu_badv_node_is_next_hop(
    const        char             *const interface_name,
-         struct mu_bat_mesh_node *const node,
+   const struct mu_bat_mesh_node *const node,
    const        bool                    potential,
                 int              *const error)
 {
@@ -672,21 +672,21 @@ bool mu_badv_node_is_next_hop(
 
    if(!node) {
       /// TODO: Set error to indicate that pointer was NULL?
-      return node_status;
-   } else {
-      node->mac_addr[17] = '\0';
+      return false;
    }
 
    next_hop_node = mu_badv_next_hop_addresses(interface_name,
-                                                    potential,
-                                                    NULL,
-                                                    error);
+                                              potential,
+                                              NULL,
+                                              error);
    if (!next_hop_node) {
       MU_SET_ERROR(error, errno);
       return false;
    } else {
       while(next_hop_node) {
-         if(!strcmp(next_hop_node->mac_addr, node->mac_addr)) {
+         if(!strncmp(next_hop_node->mac_addr,
+                     node->mac_addr,
+                     MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
             node_status = true;
          }
          passed_node = next_hop_node;
@@ -700,7 +700,7 @@ bool mu_badv_node_is_next_hop(
 
 char *mu_badv_node_accessible_via_if(
    const        char             *const interface_name,
-         struct mu_bat_mesh_node *const node,
+   const struct mu_bat_mesh_node *const node,
                 int              *const error)
 {
    MU_SET_ERROR(error, 0);
@@ -708,8 +708,6 @@ char *mu_badv_node_accessible_via_if(
    if(!node) {
       /// TODO: Set error to indicate that pointer was NULL?
       return NULL;
-   } else {
-      node->mac_addr[17] = '\0';
    }
 
    char *bat_interface_originators_file;
@@ -734,7 +732,7 @@ char *mu_badv_node_accessible_via_if(
    char* tmp_line = NULL;
 
    while ((read = getline(&line, &len, fp)) != -1) {
-      if (!strncmp(line, node->mac_addr, strlen(node->mac_addr))) {
+      if (!strncmp(line, node->mac_addr, MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
          tmp_line = strchr(line, '[');
          if(!tmp_line) {
             MU_SET_ERROR(error, errno);
@@ -772,7 +770,7 @@ char *mu_badv_node_accessible_via_if(
 
 double mu_badv_node_last_seen(
    const        char             *const interface_name,
-         struct mu_bat_mesh_node *const node,
+   const struct mu_bat_mesh_node *const node,
                 int              *const error)
 {
    MU_SET_ERROR(error, 0);
@@ -780,8 +778,6 @@ double mu_badv_node_last_seen(
    if(!node) {
       /// TODO: Set error to indicate that pointer was NULL?
       return 0;
-   } else {
-      node->mac_addr[17] = '\0';
    }
 
    char *bat_interface_originators_file;
@@ -805,7 +801,7 @@ double mu_badv_node_last_seen(
    char* tmp_line = NULL;
 
    while ((read = getline(&line, &len, fp)) != -1) {
-      if (!strncmp(line, node->mac_addr, strlen(node->mac_addr))) {
+      if (!strncmp(line, node->mac_addr, MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
          tmp_line = strchr(line, ' ');
          if(!tmp_line) {
             MU_SET_ERROR(error, errno);

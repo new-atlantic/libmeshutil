@@ -35,12 +35,14 @@
 
 #ifdef __linux
 
+#define MAC_ADDR_CHAR_REPRESENTATION_LEN 17
+
 #include <stdbool.h>
 
 /// Struct for a linked list of node MAC addresses.
 /// TODO: Representing MAC addresses as a 18 byte string is wasteful.
 struct mu_bat_mesh_node {
-   char   mac_addr[18];
+          char              mac_addr[MAC_ADDR_CHAR_REPRESENTATION_LEN + 1];
    struct mu_bat_mesh_node *next;
 };
 
@@ -200,7 +202,7 @@ __attribute__ ((visibility("default")))
 bool
 __attribute__ ((visibility("default")))
 mu_badv_node_is_next_hop(const        char             *const interface_name,
-                               struct mu_bat_mesh_node *const node,
+                         const struct mu_bat_mesh_node *const node,
                          const        bool                    potential,
                                       int              *const error);
 
@@ -219,7 +221,7 @@ char
 __attribute__ ((visibility("default")))
 *mu_badv_node_accessible_via_if(
    const        char             *const interface_name,
-         struct mu_bat_mesh_node *const node,
+   const struct mu_bat_mesh_node *const node,
                 int              *const error
    );
 
@@ -234,7 +236,7 @@ __attribute__ ((visibility("default")))
 double
 __attribute__ ((visibility("default")))
 mu_badv_node_last_seen(const        char             *const interface_name,
-                             struct mu_bat_mesh_node *const node,
+                       const struct mu_bat_mesh_node *const node,
                                     int              *const error);
 
 #endif                          /* __linux */
