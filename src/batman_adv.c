@@ -54,7 +54,7 @@
 static bool interface_dependent_path(const char  *const path_root,
                                      const char  *const interface_name,
                                      const char  *const suffix,
-                                           char **      path_string,
+                                           char **const path_string,
                                            int   *const error)
 {
    if (!path_root) {
@@ -290,8 +290,8 @@ bool mu_badv_if_up(const char *const interface_name, int *const error)
 {
    MU_SET_ERROR(error, 0);
 
-   char *bat_interface_operstate_file;
-   char *bat_interface_carrier_file;
+   char *bat_interface_operstate_file = NULL;
+   char *bat_interface_carrier_file   = NULL;
 
    if (!interface_dependent_path(VIRTUAL_NETWORK_IF_PATH_ROOT,
                                  interface_name,
@@ -379,7 +379,7 @@ char *mu_badv_if_hwaddr(const char *const interface_name, int *const error)
 {
    MU_SET_ERROR(error, 0);
 
-   char *bat_interface_address;
+   char *bat_interface_address = NULL;
 
    if (!interface_dependent_path(VIRTUAL_NETWORK_IF_PATH_ROOT,
                                  interface_name,
@@ -422,7 +422,7 @@ unsigned int mu_badv_mesh_n_nodes(const char *const interface_name,
                                         int  *const error)
 {
    MU_SET_ERROR(error, 0);
-   char *bat_interface_originators_file;
+   char *bat_interface_originators_file = NULL;
 
    BATMAN_ADV_ORIGINATORS_FILE;
 
@@ -465,7 +465,7 @@ struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
 {
    MU_SET_ERROR(error, 0);
 
-   char *bat_interface_originators_file;
+   char *bat_interface_originators_file = NULL;
 
    BATMAN_ADV_ORIGINATORS_FILE;
 
@@ -508,8 +508,9 @@ struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
          current_node = malloc(sizeof(struct mu_bat_mesh_node));
          current_node->next = first_node;
          /// TODO: Validate that a MAC-address is being read.
-         memcpy(current_node->mac_addr, line, sizeof(char) * 17);
-         current_node->mac_addr[17] = '\0';
+         memcpy(current_node->mac_addr, line,
+                sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN);
+         current_node->mac_addr[MAC_ADDR_CHAR_REPRESENTATION_LEN] = '\0';
          first_node = current_node;
       }
    }
@@ -530,7 +531,7 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
 {
    MU_SET_ERROR(error, 0);
 
-   char *bat_interface_originators_file;
+   char *bat_interface_originators_file = NULL;
 
    BATMAN_ADV_ORIGINATORS_FILE;
 
@@ -538,9 +539,10 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
    char *line = NULL;
    size_t len = 0;
    ssize_t read;
-   struct mu_bat_mesh_node *first_node = NULL;
+   struct mu_bat_mesh_node *first_node   = NULL;
    struct mu_bat_mesh_node *current_node = NULL;
-   char *address_tmp = malloc(sizeof(char) * 18);
+   char *address_tmp = malloc(sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN
+                              + 1);
 
    fp = fopen (bat_interface_originators_file, "r");
    free(bat_interface_originators_file);
@@ -573,12 +575,15 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
 
       if (counter > 2) {
          if(!potential) { // Looking only for actual next hops.
-            memcpy(address_tmp, strchr(line, ')') +2, sizeof(char) * 17);
-            address_tmp[17] = '\0';
+            memcpy(address_tmp, strchr(line, ')') + 2,
+                   sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN);
+            address_tmp[MAC_ADDR_CHAR_REPRESENTATION_LEN] = '\0';
 
             current_node = first_node;
             while(current_node) { // Check if address already in linked list.
-               if(!strcmp(current_node->mac_addr, address_tmp)) {
+               if(!strncmp(current_node->mac_addr,
+                           address_tmp,
+                           MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
                   duplicate = true;
                   current_node = NULL;
                } else {
@@ -592,14 +597,15 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
                }
                current_node = malloc(sizeof(struct mu_bat_mesh_node));
                current_node->next = first_node;
-               memcpy(current_node->mac_addr, address_tmp, sizeof(char) * 17);
-               current_node->mac_addr[17] = '\0';
+               memcpy(current_node->mac_addr, address_tmp,
+                      sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN);
+               current_node->mac_addr[MAC_ADDR_CHAR_REPRESENTATION_LEN] = '\0';
                first_node = current_node;
             } else {
                duplicate = false;
             }
          } else { // Looking for potential and actual next hops.
-            char *tmp_line;
+            char *tmp_line = NULL;
 
             tmp_line = strchr(line, ']');
             if(tmp_line) {
@@ -610,8 +616,9 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
                if(tmp_line && strchr(tmp_line, '(')) { // Check that there is
                                                        // still a MAC address
                                                        // in tmp_line.
-                  memcpy(address_tmp, tmp_line + 1, sizeof(char) * 17);
-                  address_tmp[17] = '\0';
+                  memcpy(address_tmp, tmp_line + 1,
+                         sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN);
+                  address_tmp[MAC_ADDR_CHAR_REPRESENTATION_LEN] = '\0';
                   tmp_line = strchr(tmp_line, ')');
                   if(tmp_line) {
                      tmp_line = tmp_line + 1; // TODO: If we are at the last
@@ -624,7 +631,8 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
 
                current_node = first_node;
                while(current_node) { // Check if address already in linked list.
-                  if(!strcmp(current_node->mac_addr, address_tmp)) {
+                  if(!strncmp(current_node->mac_addr, address_tmp,
+                              MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
                      duplicate = true;
                      current_node = NULL;
                   } else {
@@ -638,8 +646,9 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
                   }
                   current_node = malloc(sizeof(struct mu_bat_mesh_node));
                   current_node->next = first_node;
-                  memcpy(current_node->mac_addr, address_tmp, sizeof(char) * 17);
-                  current_node->mac_addr[17] = '\0';
+                  memcpy(current_node->mac_addr, address_tmp,
+                         sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN);
+                  current_node->mac_addr[MAC_ADDR_CHAR_REPRESENTATION_LEN] = '\0';
                   first_node = current_node;
                } else {
                   duplicate = false;
@@ -666,8 +675,8 @@ bool mu_badv_node_is_next_hop(
 {
    MU_SET_ERROR(error, 0);
 
-   struct mu_bat_mesh_node *next_hop_node;
-   struct mu_bat_mesh_node *passed_node;
+   struct mu_bat_mesh_node *next_hop_node = NULL;
+   struct mu_bat_mesh_node *passed_node   = NULL;
    bool   node_status = false;
 
    if(!node) {
@@ -710,7 +719,7 @@ char *mu_badv_node_accessible_via_if(
       return NULL;
    }
 
-   char *bat_interface_originators_file;
+   char *bat_interface_originators_file = NULL;
 
    BATMAN_ADV_ORIGINATORS_FILE;
 
@@ -780,7 +789,7 @@ double mu_badv_node_last_seen(
       return 0;
    }
 
-   char *bat_interface_originators_file;
+   char *bat_interface_originators_file = NULL;
 
    BATMAN_ADV_ORIGINATORS_FILE;
 
