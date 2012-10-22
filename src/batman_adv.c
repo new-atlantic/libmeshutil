@@ -166,9 +166,9 @@ bool mu_badv_kmod_available(int *const error)
 {
    MU_SET_ERROR(error, 0);
 
-   struct utsname system_version_info;
-   size_t module_name_length;
-   char *module_name;
+   struct  utsname system_version_info;
+   size_t  module_name_length;
+   char   *module_name = NULL;
 
    if (!uname(&system_version_info)) {
       module_name_length = (strlen(KERNEL_MODULE_ROOT)
