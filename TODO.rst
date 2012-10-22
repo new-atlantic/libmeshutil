@@ -5,6 +5,9 @@
 Before a stable release
 -----------------------
 
+* Use const for variables and function arguments when appropriate
+* Use versioned functions and a symbol map
+    - How portable is this?
 * Check return values of fclose()
 * Support for multiple versions
 * Testing of multiple versions
