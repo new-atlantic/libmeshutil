@@ -23,3 +23,4 @@ Before a stable release
     - more cunit tests?
 * Analyze with valgrind
 * Analyze errno and set *error accordingly with MESHUTIL specific error codes?
+* Migrate to cunit based unit tests and deprecate bash based tests.
