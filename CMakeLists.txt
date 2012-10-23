@@ -16,10 +16,8 @@ if (CMAKE_COMPILER_IS_GNUCC)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif (CMAKE_COMPILER_IS_GNUCC)
 
-install (TARGETS meshutil
-         LIBRARY DESTINATION lib)
-install(DIRECTORY src/ DESTINATION include/meshutil
-          FILES_MATCHING PATTERN "*.h")
+install (TARGETS meshutil LIBRARY DESTINATION lib)
+install (FILES src/meshutil.h DESTINATION include/meshutil)
 
 enable_testing ()
 add_subdirectory("tests/bash")
