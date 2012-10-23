@@ -49,7 +49,7 @@
 /// Originators file field header for interface names
 #define BATMAN_ADV_ORIGINATORS_IFNAME_HEADER "outgoingIF"
 
-/*** STATIC FUNCTIONS ***/
+/*** STATIC HELPER FUNCTIONS ***/
 
 static bool interface_dependent_path(const char  *const path_root,
                                      const char  *const interface_name,
@@ -121,40 +121,44 @@ static bool interface_dependent_path(const char  *const path_root,
    }
 }
 
-/*** FUNCTION REPLACEMENT MACROS ***/
+static char *batman_adv_originators_file_path(const char  *const interface_name,
+                                                    int   *const error)
+{
+   char *debugfs_root = mu_linux_debugfs_mount_point(NULL);
+   char *batman_debugfs_dir = NULL;
+   char *bat_interface_originators_file = NULL;
 
-#define BATMAN_ADV_ORIGINATORS_FILE                               \
-   char *debugfs_root = mu_linux_debugfs_mount_point(NULL);       \
-   char *batman_debugfs_dir = NULL;                               \
-                                                                  \
-   if (!debugfs_root) {                                           \
-      MU_SET_ERROR(error, errno);                                 \
-      return 0;                                                   \
-   }                                                              \
-                                                                  \
-   batman_debugfs_dir = calloc (strlen (debugfs_root)             \
-                                + strlen("/batman_adv/") + 1,     \
-                                sizeof (char));                   \
-   if (!batman_debugfs_dir) {                                     \
-      MU_SET_ERROR(error, errno);                                 \
-      free (debugfs_root);                                        \
-      return 0;                                                   \
-   }                                                              \
-                                                                  \
-   strcat (batman_debugfs_dir, debugfs_root);                     \
-   strcat (batman_debugfs_dir, "/batman_adv/");                   \
-   free (debugfs_root);                                           \
-                                                                  \
-   if (!interface_dependent_path(batman_debugfs_dir,              \
-                                 interface_name,                  \
-                                 "/originators",                  \
-                                 &bat_interface_originators_file, \
-                                 error)) {                        \
-      free (batman_debugfs_dir);                                  \
-      return 0;                                                   \
-   }                                                              \
-                                                                  \
-   free (batman_debugfs_dir);                                     \
+   if (!debugfs_root) {
+      MU_SET_ERROR(error, errno);
+      return 0;
+   }
+
+   batman_debugfs_dir = calloc (strlen (debugfs_root)
+                                + strlen("/batman_adv/") + 1,
+                                sizeof (char));
+
+   if (!batman_debugfs_dir) {
+      MU_SET_ERROR(error, errno);
+      free (debugfs_root);
+      return 0;
+   }
+
+   strcat (batman_debugfs_dir, debugfs_root);
+   strcat (batman_debugfs_dir, "/batman_adv/");
+   free (debugfs_root);
+
+   if (!interface_dependent_path(batman_debugfs_dir,
+                                 interface_name,
+                                 "/originators",
+                                 &bat_interface_originators_file,
+                                 error)) {
+      free (batman_debugfs_dir);
+      return NULL;
+   }
+
+   free (batman_debugfs_dir);
+   return bat_interface_originators_file;
+}
 
 /*** API FUNCTIONS ***/
 
@@ -422,9 +426,14 @@ unsigned int mu_badv_mesh_n_nodes(const char *const interface_name,
                                         int  *const error)
 {
    MU_SET_ERROR(error, 0);
-   char *bat_interface_originators_file = NULL;
+   char *bat_interface_originators_file = batman_adv_originators_file_path(
+                                             interface_name,
+                                             error);
 
-   BATMAN_ADV_ORIGINATORS_FILE;
+   if(!bat_interface_originators_file) {
+      MU_SET_ERROR(error, errno);
+      return 0;
+   }
 
    FILE *fp;
    char *line = NULL;
@@ -465,9 +474,15 @@ struct mu_bat_mesh_node *mu_badv_mesh_node_addresses(
 {
    MU_SET_ERROR(error, 0);
 
-   char *bat_interface_originators_file = NULL;
+   char *bat_interface_originators_file = batman_adv_originators_file_path(
+                                             interface_name,
+                                             error);
 
-   BATMAN_ADV_ORIGINATORS_FILE;
+   if(!bat_interface_originators_file) {
+      MU_SET_ERROR(error, errno);
+      return NULL;
+   }
+
 
    FILE *fp;
    char *line = NULL;
@@ -531,9 +546,15 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
 {
    MU_SET_ERROR(error, 0);
 
-   char *bat_interface_originators_file = NULL;
+   char *bat_interface_originators_file = batman_adv_originators_file_path(
+                                             interface_name,
+                                             error);
 
-   BATMAN_ADV_ORIGINATORS_FILE;
+   if(!bat_interface_originators_file) {
+      MU_SET_ERROR(error, errno);
+      return NULL;
+   }
+
 
    FILE *fp;
    char *line = NULL;
@@ -715,9 +736,15 @@ char *mu_badv_node_accessible_via_if(
       return NULL;
    }
 
-   char *bat_interface_originators_file = NULL;
+   char *bat_interface_originators_file = batman_adv_originators_file_path(
+                                             interface_name,
+                                             error);
 
-   BATMAN_ADV_ORIGINATORS_FILE;
+   if(!bat_interface_originators_file) {
+      MU_SET_ERROR(error, errno);
+      return NULL;
+   }
+
 
    FILE *fp;
    char *line = NULL;
@@ -789,9 +816,14 @@ double mu_badv_node_last_seen(
       return 0;
    }
 
-   char *bat_interface_originators_file = NULL;
+   char *bat_interface_originators_file = batman_adv_originators_file_path(
+                                             interface_name,
+                                             error);
 
-   BATMAN_ADV_ORIGINATORS_FILE;
+   if(!bat_interface_originators_file) {
+      MU_SET_ERROR(error, errno);
+      return 0;
+   }
 
    FILE *fp;
    char *line = NULL;
@@ -857,9 +889,15 @@ struct mu_bat_mesh_node *mu_badv_node_next_hop(
       return NULL;
    }
 
-   char *bat_interface_originators_file = NULL;
+   char *bat_interface_originators_file = batman_adv_originators_file_path(
+                                             interface_name,
+                                             error);
 
-   BATMAN_ADV_ORIGINATORS_FILE;
+   if(!bat_interface_originators_file) {
+      MU_SET_ERROR(error, errno);
+      return NULL;
+   }
+
 
    struct mu_bat_mesh_node *next_hop_node = NULL;
 
