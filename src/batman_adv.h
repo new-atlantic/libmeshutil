@@ -158,7 +158,7 @@ mu_badv_mesh_n_nodes(const char *const interface_name, int *const error);
  *         list have to be free()'d by the caller.
  * @retval NULL Returned on failure or when no nodes available.
  */
-struct mu_bat_mesh_node 
+struct mu_bat_mesh_node
 __attribute__ ((visibility("default")))
 *mu_badv_mesh_node_addresses(const char *const interface_name,
                                    int  *const n_nodes,
@@ -181,7 +181,7 @@ __attribute__ ((visibility("default")))
  */
 struct mu_bat_mesh_node
 __attribute__ ((visibility("default")))
-*mu_badv_next_hop_addresses(const char *const interface_name, 
+*mu_badv_next_hop_addresses(const char *const interface_name,
                             const bool        potential,
                                   int  *const n_nodes,
                                   int  *const error);
@@ -236,6 +236,25 @@ __attribute__ ((visibility("default")))
 double
 __attribute__ ((visibility("default")))
 mu_badv_node_last_seen(const        char             *const interface_name,
+                       const struct mu_bat_mesh_node *const node,
+                                    int              *const error);
+
+/**
+ * @brief Checks what is the next hop node to reach *node.
+ *
+ * If self returns the passed pointer! So always the return value
+ * before calling free() to avoid trying to free() allocated memory twice.
+ *
+ * @param *error See documentation for *error.
+ * @param *node  The node that is to be checked.
+ * @param *interface_name Name of the interface to be looked for. If NULL is
+ *                        passed looks for "bat0", the default interface.
+ *
+ * @return Pointer to the next hop node. 
+ */
+struct mu_bat_mesh_node
+__attribute__ ((visibility("default")))
+*mu_badv_node_next_hop(const        char             *const interface_name,
                        const struct mu_bat_mesh_node *const node,
                                     int              *const error);
 

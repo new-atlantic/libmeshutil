@@ -841,5 +841,70 @@ double mu_badv_node_last_seen(
    return 0;
 }
 
+struct mu_bat_mesh_node *mu_badv_node_next_hop(
+   const        char             *const interface_name,
+   const struct mu_bat_mesh_node *const node,
+                int              *const error)
+{
+   MU_SET_ERROR(error, 0);
+
+   if(!node) {
+      /// TODO: Set error to indicate that pointer was NULL?
+      return NULL;
+   }
+
+   char *bat_interface_originators_file = NULL;
+
+   BATMAN_ADV_ORIGINATORS_FILE;
+
+   struct mu_bat_mesh_node *next_hop_node = NULL;
+
+   FILE *fp;
+   char *line = NULL;
+   size_t len = 0;
+   ssize_t read;
+
+   fp = fopen (bat_interface_originators_file, "r");
+   free(bat_interface_originators_file);
+
+   if (!fp) {
+      MU_SET_ERROR(error, errno);
+      return NULL;
+   }
+
+   unsigned int counter = 0;
+   char address_tmp[MAC_ADDR_CHAR_REPRESENTATION_LEN + 1];
+
+   while ((read = getline(&line, &len, fp)) != -1) {
+      counter++;
+      if (counter > 2) {
+         if (!strncmp(line, node->mac_addr, MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
+            memcpy(address_tmp, strchr(line, ')') + 2,
+                   sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN);
+            address_tmp[MAC_ADDR_CHAR_REPRESENTATION_LEN] = '\0';
+            if (!strncmp(address_tmp, node->mac_addr,
+                         MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
+               next_hop_node = (struct mu_bat_mesh_node *) node;
+            } else {
+               next_hop_node = malloc(sizeof(struct mu_bat_mesh_node));
+               if(!next_hop_node) {
+                  MU_SET_ERROR(error, errno);
+                  fclose(fp);
+                  free(line);
+               }
+               memcpy(next_hop_node->mac_addr, address_tmp,
+                      sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN);
+               next_hop_node->mac_addr[MAC_ADDR_CHAR_REPRESENTATION_LEN] = '\0';
+               next_hop_node->next = NULL;
+            }
+            break;
+         }
+      }
+   }
+
+   free (line);
+   fclose (fp);
+   return next_hop_node;
+}
 
 #endif                          /* __linux */
