@@ -1,5 +1,9 @@
+/** @file meshutil.h
+ * Common definitions for meshutil
+ */
+
 /*
- * Copyright 2012 Torsti Schulz
+ * Copyright © 2012 Torsti Schulz
  *
  * This file is part of the meshutil library.
  *
@@ -17,10 +21,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// @file
-
 #ifndef MESHUTIL_H
 #define MESHUTIL_H 1
+
+/*******************************************************************************
+*   FUNCTION MACROS                                                            *
+*******************************************************************************/
 
 /**
  * @brief Macro to prevent assigning error values to a NULL pointer.

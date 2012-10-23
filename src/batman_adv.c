@@ -1,5 +1,9 @@
+/** @file batman_adv.c
+ * meshutil API implementation for B.A.T.M.A.N. advanced
+ */
+
 /*
- * Copyright 2012 Torsti Schulz
+ * Copyright © 2012 Torsti Schulz
  *
  * This file is part of the meshutil library.
  *
@@ -17,11 +21,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// @file
-
 #ifdef __linux
 
+/*******************************************************************************
+*   FEATURE TEST MACROS                                                        *
+*******************************************************************************/
+
 #define _XOPEN_SOURCE 700
+
+/*******************************************************************************
+*   HEADER FILES                                                               *
+*******************************************************************************/
 
 #include <errno.h>
 #include <stdio.h>
@@ -30,9 +40,13 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
-#include "meshutil.h"
-#include "linux.h"
 #include "batman_adv.h"
+#include "linux.h"
+#include "meshutil.h"
+
+/*******************************************************************************
+*   CONSTANT DEFINITIONS                                                       *
+*******************************************************************************/
 
 /// String in a batman_adv interface originator table indicating that no
 /// nodes are available.
@@ -49,7 +63,9 @@
 /// Originators file field header for interface names
 #define BATMAN_ADV_ORIGINATORS_IFNAME_HEADER "outgoingIF"
 
-/*** STATIC HELPER FUNCTIONS ***/
+/*******************************************************************************
+*   STATIC HELPER FUNCTION DEFINITIONS                                         *
+*******************************************************************************/
 
 static bool interface_dependent_path(const char  *const path_root,
                                      const char  *const interface_name,
@@ -160,7 +176,9 @@ static char *batman_adv_originators_file_path(const char  *const interface_name,
    return bat_interface_originators_file;
 }
 
-/*** API FUNCTIONS ***/
+/*******************************************************************************
+*   PUBLIC API FUNCTION DEFINITIONS                                            *
+*******************************************************************************/
 
 /* Implementation notes:
  * - Checks for the availability of the file batman-adv.ko in the module

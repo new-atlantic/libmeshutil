@@ -1,5 +1,9 @@
+/** @file batman_adv.h
+ * meshutil API for B.A.T.M.A.N. advanced
+ */
+
 /*
- * Copyright 2012 Torsti Schulz
+ * Copyright © 2012 Torsti Schulz
  *
  * This file is part of the meshutil library.
  *
@@ -17,8 +21,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// @file
-
 /* Abbreviations used:
  *
  *     batman_adv:  B.A.T.M.A.N. advanced
@@ -35,9 +37,21 @@
 
 #ifdef __linux
 
-#define MAC_ADDR_CHAR_REPRESENTATION_LEN 17
+/*******************************************************************************
+*   HEADER FILES                                                               *
+*******************************************************************************/
 
 #include <stdbool.h>
+
+/*******************************************************************************
+*   CONSTANT DEFINITIONS                                                       *
+*******************************************************************************/
+
+#define MAC_ADDR_CHAR_REPRESENTATION_LEN 17
+
+/*******************************************************************************
+*   TYPE DEFINITIONS                                                           *
+*******************************************************************************/
 
 /// Struct for a linked list of node MAC addresses.
 /// TODO: Representing MAC addresses as a 18 byte string is wasteful.
@@ -45,6 +59,10 @@ struct mu_bat_mesh_node {
           char              mac_addr[MAC_ADDR_CHAR_REPRESENTATION_LEN + 1];
    struct mu_bat_mesh_node *next;
 };
+
+/*******************************************************************************
+*   PUBLIC API FUNCTION DECLARATIONS                                           *
+*******************************************************************************/
 
 /**
  * @brief Test whether the batman_adv kernel module is available on the

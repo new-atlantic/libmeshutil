@@ -1,5 +1,9 @@
+/** @file linux.h
+ * Internal Linux specific non-mesh API
+ */
+
 /*
- * Copyright 2012 Torsti Schulz
+ * Copyright © 2012 Torsti Schulz
  *
  * This file is part of the meshutil library.
  *
@@ -17,21 +21,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// @file
-
 #ifdef __linux
 
+/*******************************************************************************
+*   FEATURE TEST MACROS                                                        *
+*******************************************************************************/
+
 #define _XOPEN_SOURCE 700
+
+/*******************************************************************************
+*   HEADER FILES                                                               *
+*******************************************************************************/
 
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "meshutil.h"
 #include "linux.h"
+#include "meshutil.h"
+
+/*******************************************************************************
+*   CONSTANT DEFINITIONS                                                       *
+*******************************************************************************/
 
 #define PROC_MOUNTS_PATH "/proc/mounts"
+
+/*******************************************************************************
+*   PRIVATE API FUNCTION DEFINITIONS                                           *
+*******************************************************************************/
 
 /* Implementation notes:
  * - Parses /proc/mounts.

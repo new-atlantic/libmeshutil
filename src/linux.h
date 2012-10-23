@@ -1,5 +1,9 @@
+/** @file linux.h
+ * Internal Linux specific non-mesh API
+ */
+
 /*
- * Copyright 2012 Torsti Schulz
+ * Copyright © 2012 Torsti Schulz
  *
  * This file is part of the meshutil library.
  *
@@ -17,18 +21,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// @file
-
-/*
- * Helper functions for the Linux environment.
- */
-
 #ifndef MESHUTIL_LINUX_H
 #define MESHUTIL_LINUX_H 1
 
 #ifdef __linux
 
+/*******************************************************************************
+*   HEADER FILES                                                               *
+*******************************************************************************/
+
 #include <stdbool.h>
+
+/*******************************************************************************
+*   PRIVATE API FUNCTION DECLARATIONS                                          *
+*******************************************************************************/
 
 /**
  * @brief Check if the Linux debug filesystem is mounted.
