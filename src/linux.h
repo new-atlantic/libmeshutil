@@ -37,9 +37,9 @@
 *******************************************************************************/
 
 /**
- * @brief Check if the Linux debug filesystem is mounted.
+ * @brief PRIVATE Test whether the Linux debug filesystem is mounted.
  *
- * @param *error See documentation for *error.
+ * @param *error [out] For setting error codes on function failure.
  *
  * @retval true  debugfs is mounted
  * @retval false debugfs is not mounted and/or an error occurred.
@@ -49,11 +49,11 @@ mu_linux_debugfs_mounted(int *const error)
 __attribute__ ((visibility("hidden")));
 
 /**
- * @brief Get the path to the mount point of the Linux debug filesystem.
+ * @brief PRIVATE Get the path to the mount point of the Linux debug filesystem.
  *
- * If debugfs is mounted at multiple paths, returns the first one.
+ * If debugfs is mounted at multiple mount points, returns the first one.
  *
- * @param *error See documentation for *error.
+ * @param *error [out] For setting error codes on function failure.
  *
  * @return Pointer to string containing the mount path.
  * @retval NULL debugfs not mounted or other error occurred.

@@ -1,4 +1,4 @@
-/** @file linux.h
+/** @file linux.c
  * Internal Linux specific non-mesh API
  */
 

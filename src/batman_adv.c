@@ -21,6 +21,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @page pg_batman_adv_impl     B.A.T.M.A.N. advanced API implementation
+ *
+ * The batman_adv originators file is a table of all originating nodes and next
+ * hops to them for a bat interface. It is available in the batman_adv directory
+ * under the Linux debug filesystem.
+ *
+ * Understanding implementation of functions using that file requires knowledge
+ * of the syntax of the originators file.
+ */
+
 #ifdef __linux
 
 /*******************************************************************************
@@ -48,18 +58,25 @@
 *   CONSTANT DEFINITIONS                                                       *
 *******************************************************************************/
 
-/// String in a batman_adv interface originator table indicating that no
-/// nodes are available.
+/** String in a batman_adv interface originator table indicating that no
+ * nodes are available.
+ */
 #define NO_NODES_IN_RANGE_STR "No batman nodes in range ...\n"
+
 /// Path to the root of the directory containting Linux kernel modules.
 #define KERNEL_MODULE_ROOT "/lib/modules/"
-/// Path to batman_adv kernel module under a specific kernel version
-/// module directory.
+
+/** Path to batman_adv kernel module under a specific kernel version
+ * module directory.
+ */
 #define BATMAN_ADV_KMOD_PATH "/kernel/net/batman-adv/batman-adv.ko"
+
 /// Path to the version of the batman_adv kernel module in the sys filesystem.
 #define BATMAN_ADV_KMOD_VERSION_PATH "/sys/module/batman_adv/version"
+
 /// Path to the sys filesystem directory containing virtual network devices.
 #define VIRTUAL_NETWORK_IF_PATH_ROOT "/sys/devices/virtual/net/"
+
 /// Originators file field header for interface names
 #define BATMAN_ADV_ORIGINATORS_IFNAME_HEADER "outgoingIF"
 
