@@ -250,7 +250,7 @@ mu_badv_node_last_seen(const        char             *const interface_name,
  * @param *interface_name Name of the interface to be looked for. If NULL is
  *                        passed looks for "bat0", the default interface.
  *
- * @return Pointer to the next hop node. 
+ * @return Pointer to the next hop node.
  */
 struct mu_bat_mesh_node
 __attribute__ ((visibility("default")))

@@ -9,6 +9,7 @@ Before a stable release
     - Wrapper functions to reads and writes:
         + mu_mac_addr_to_str
         + mu_str_to_mac_addr
+    - OR: mu_bat_mesh_node as opaque type
 * Use versioned functions and a symbol map
     - How portable is this?
 * Check return values of fclose()?
@@ -21,3 +22,4 @@ Before a stable release
 * Unit tests covering all functions
     - more cunit tests?
 * Analyze with valgrind
+* Analyze errno and set *error accordingly with MESHUTIL specific error codes?
