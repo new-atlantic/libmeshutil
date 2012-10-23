@@ -541,15 +541,13 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
    ssize_t read;
    struct mu_bat_mesh_node *first_node   = NULL;
    struct mu_bat_mesh_node *current_node = NULL;
-   char *address_tmp = malloc(sizeof(char) * MAC_ADDR_CHAR_REPRESENTATION_LEN
-                              + 1);
+   char address_tmp[MAC_ADDR_CHAR_REPRESENTATION_LEN + 1];
 
    fp = fopen (bat_interface_originators_file, "r");
    free(bat_interface_originators_file);
 
    if (!fp) {
       MU_SET_ERROR(error, errno);
-      free (address_tmp);
       return NULL;
    }
 
@@ -565,7 +563,6 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
 
       if (!strcmp(line, NO_NODES_IN_RANGE_STR)) {
          free(line);
-         free(address_tmp);
          fclose(fp);
          if(n_nodes) {
             *n_nodes = 0;
@@ -659,7 +656,6 @@ struct mu_bat_mesh_node *mu_badv_next_hop_addresses(
    }
 
    free(line);
-   free(address_tmp);
    fclose(fp);
    return first_node;
 }
