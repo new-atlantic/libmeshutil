@@ -739,36 +739,40 @@ char *mu_badv_node_accessible_via_if(
    }
 
    char* tmp_line = NULL;
+   unsigned int counter = 0;
 
    while ((read = getline(&line, &len, fp)) != -1) {
-      if (!strncmp(line, node->mac_addr, MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
-         tmp_line = strchr(line, '[');
-         if(!tmp_line) {
-            MU_SET_ERROR(error, errno);
+      counter++;
+      if (counter > 2) {
+         if (!strncmp(line, node->mac_addr, MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
+            tmp_line = strchr(line, '[');
+            if(!tmp_line) {
+               MU_SET_ERROR(error, errno);
+               free (line);
+               fclose (fp);
+               return NULL;
+            }
+
+            tmp_line = tmp_line + 1;
+
+            *strchr(tmp_line, ']') = '\0'; // End the string.
+
+            if (tmp_line[0] == ' ') { // If ifname preceded by space skip it!
+               tmp_line = strrchr(tmp_line, ' ');
+            }
+
+            iface = calloc((
+                     strnlen(tmp_line,
+                             strlen(BATMAN_ADV_ORIGINATORS_IFNAME_HEADER)) + 1),
+                     sizeof(char));
+            strncpy(iface, tmp_line,
+                       strnlen(tmp_line,
+                       strlen(BATMAN_ADV_ORIGINATORS_IFNAME_HEADER)));
+            tmp_line = NULL;
             free (line);
             fclose (fp);
-            return NULL;
+            return iface;
          }
-
-         tmp_line = tmp_line + 1;
-
-         *strchr(tmp_line, ']') = '\0'; // End the string.
-
-         if (tmp_line[0] == ' ') { // If ifname preceded by space skip it!
-            tmp_line = strrchr(tmp_line, ' ');
-         }
-
-         iface = calloc((
-                  strnlen(tmp_line,
-                          strlen(BATMAN_ADV_ORIGINATORS_IFNAME_HEADER)) + 1),
-                  sizeof(char));
-         strncpy(iface, tmp_line,
-                    strnlen(tmp_line,
-                    strlen(BATMAN_ADV_ORIGINATORS_IFNAME_HEADER)));
-         tmp_line = NULL;
-         free (line);
-         fclose (fp);
-         return iface;
       }
    }
 
@@ -807,32 +811,36 @@ double mu_badv_node_last_seen(
       return 0;
    }
 
+   unsigned int counter = 0;
    char* tmp_line = NULL;
 
    while ((read = getline(&line, &len, fp)) != -1) {
-      if (!strncmp(line, node->mac_addr, MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
-         tmp_line = strchr(line, ' ');
-         if(!tmp_line) {
-            MU_SET_ERROR(error, errno);
+      counter++;
+      if (counter > 2) {
+         if (!strncmp(line, node->mac_addr, MAC_ADDR_CHAR_REPRESENTATION_LEN)) {
+            tmp_line = strchr(line, ' ');
+            if(!tmp_line) {
+               MU_SET_ERROR(error, errno);
+               free (line);
+               fclose (fp);
+               return 0;
+            }
+
+            *strchr(tmp_line, 's') = '\0'; // End the string.;
+
+            tmp_line = strrchr(tmp_line, ' ') + 1; // Skip to last whitespace + 1
+                                                   // before last seen value.
+
+            if (sscanf(tmp_line, "%lf", &last_seen) != 1) {
+               MU_SET_ERROR(error, errno);
+               last_seen = 0;
+            }
+
+            tmp_line = NULL;
             free (line);
             fclose (fp);
-            return 0;
+            return last_seen;
          }
-
-         *strchr(tmp_line, 's') = '\0'; // End the string.;
-
-         tmp_line = strrchr(tmp_line, ' ') + 1; // Skip to last whitespace + 1
-                                                // before last seen value.
-
-         if (sscanf(tmp_line, "%lf", &last_seen) != 1) {
-            MU_SET_ERROR(error, errno);
-            last_seen = 0;
-         }
-
-         tmp_line = NULL;
-         free (line);
-         fclose (fp);
-         return last_seen;
       }
    }
 
