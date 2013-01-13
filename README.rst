@@ -8,13 +8,14 @@
 Overview
 --------
 
-*libmeshutil* is a C library that provides an API for querying information from
-different mesh routing protocols. More specifically, it provides information
-about the state of the routing protocol, the network interfaces it uses as well
-as information about the network accessed via the protocol. Information about
-the network includes measures such as the number of nodes in the network and
-addresses of direct and potential next hops. The exact information accessible
-via the APIs depends on the routing protocol (and version) in question.
+*libmeshutil* is a C++ library that provides an API for querying information
+from different mesh routing protocols. More specifically, it provides
+information about the state of the routing protocol, the network interfaces it
+uses as well as information about the network accessed via the protocol.
+Information about the network includes measures such as the number of nodes in
+the network and addresses of direct and potential next hops. The exact
+information accessible via the APIs depends on the routing protocol (and
+version) in question.
 
 For the programming of applications that are not meant to be tied to a specific
 routing  protocol it is preferrable to use *libmeshaware* which provides a
@@ -57,4 +58,3 @@ later version.
 
 You can find a copy of the license in the COPYING file or at
 http://www.gnu.org/licenses/lgpl-3.0.txt.
-
