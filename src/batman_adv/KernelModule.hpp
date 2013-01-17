@@ -1,5 +1,5 @@
 /*
- * Copyright © 2012 Torsti Schulz
+ * Copyright © 2013 Torsti Schulz
  *
  * This file is part of the meshutil library.
  *

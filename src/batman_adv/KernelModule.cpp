@@ -1,5 +1,5 @@
 /*
- * Copyright © 2012 Torsti Schulz
+ * Copyright © 2013 Torsti Schulz
  *
  * This file is part of the meshutil library.
  *
@@ -58,10 +58,11 @@ bool meshutil::batman_adv::KernelModule::isLoaded() {
 }
 
 std::string meshutil::batman_adv::KernelModule::Version() {
+	// TODO: should raise exception if opening stream fails.
 	std::ifstream VersionFile("/sys/module/batman_adv/version");
 	std::string Version;
 
 	std::getline(VersionFile, Version);
 
-	return Version.substr(0, Version.length() - 1);
+	return Version;
 }
